@@ -8,8 +8,10 @@
 name: Java CI with Gradle
 
 on:
+  push:
+    branches: ["refactor/*", "feat/*"]
   pull_request:
-    branches: [ "hotfix/*", "feat/*", "dev", "main" ]
+    branches: [ "refactor/*" , "hotfix/*", "feat/*", "dev", "main" ]
 
 jobs:
   test:
