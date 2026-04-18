@@ -70,6 +70,5 @@ public class LoginServiceTest {
                 () -> loginService.executeLogin(requestDummyUser));
 
         Assertions.assertEquals(HttpStatus.UNAUTHORIZED, ex.getStatus());
-
     }
 }

@@ -4,11 +4,13 @@ import dev.nbcsparta.assignment.schedulemanager.controller.LoginController;
 import dev.nbcsparta.assignment.schedulemanager.dto.SessionUser;
 import dev.nbcsparta.assignment.schedulemanager.dto.request.PostLoginRequest;
 import dev.nbcsparta.assignment.schedulemanager.service.LoginService;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
 import org.springframework.data.jpa.mapping.JpaMetamodelMappingContext;
 import org.springframework.http.MediaType;
+import org.springframework.mock.web.MockHttpSession;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import tools.jackson.databind.ObjectMapper;
@@ -90,5 +92,17 @@ public class LoginControllerTest {
                                 .writeValueAsString(
                                         new PostLoginRequest("", "qwer234"))))
                 .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    public void testExecuteLogoutAndSuccess() throws Exception {
+
+        MockHttpSession session = new MockHttpSession();
+        session.setAttribute("LOGIN_USER", new SessionUser(1L, "jane.doe@dummy.org"));
+        mockMvc.perform(post("/logout"))
+                .andExpect(status().isOk())
+                .andExpect(request().sessionAttributeDoesNotExist("LOGIN_USER"));
+
+        Assertions.assertTrue(session.isInvalid());
     }
 }
