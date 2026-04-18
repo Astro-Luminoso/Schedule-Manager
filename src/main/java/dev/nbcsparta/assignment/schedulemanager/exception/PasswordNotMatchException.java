@@ -6,8 +6,8 @@ public class PasswordNotMatchException extends RuntimeException {
 
     private HttpStatus status;
 
-    public PasswordNotMatchException(String message, HttpStatus status) {
-        super(message);
+    public PasswordNotMatchException(HttpStatus status) {
+        super("Invalid Password");
         this.status = status;
     }
 
