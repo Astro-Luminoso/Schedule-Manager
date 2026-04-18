@@ -9,7 +9,7 @@ name: Java CI with Gradle
 
 on:
   pull_request:
-    branches: [ "hotfix/*", "feat/*", "dev", "main" ]
+    branches: [ "refactor/*" , "hotfix/*", "feat/*", "dev", "main" ]
 
 jobs:
   test:

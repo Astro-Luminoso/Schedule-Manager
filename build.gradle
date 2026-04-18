@@ -22,6 +22,7 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
     implementation 'org.springframework.boot:spring-boot-starter-validation'
     implementation 'org.springframework.boot:spring-boot-starter-webmvc'
+    implementation 'at.favre.lib:bcrypt:0.10.2'
     runtimeOnly 'com.mysql:mysql-connector-j'
     testImplementation 'org.springframework.boot:spring-boot-starter-data-jpa-test'
     testImplementation 'org.springframework.boot:spring-boot-starter-validation-test'
@@ -31,4 +32,15 @@ dependencies {
 
 tasks.named('test') {
     useJUnitPlatform()
+
+    // 1. JDK 21+에서 CDS 관련 경고를 방지하기 위해 추가
+    jvmArgs("-Xshare:off")
+
+    // 2. 테스트 실행 직전에 Mockito 에이전트 경로를 찾아 주입
+    doFirst {
+        def mockitoCoreJar = configurations.testRuntimeClasspath.find { it.name.contains("mockito-core") }
+        if (mockitoCoreJar) {
+            jvmArgs("-javaagent:${mockitoCoreJar.absolutePath}")
+        }
+    }
 }
