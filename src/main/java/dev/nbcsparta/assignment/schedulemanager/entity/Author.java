@@ -1,5 +1,6 @@
 package dev.nbcsparta.assignment.schedulemanager.entity;
 
+import dev.nbcsparta.assignment.schedulemanager.config.PasswordEncoder;
 import jakarta.persistence.*;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
@@ -31,5 +32,17 @@ public class Author {
     public Author(String email, String password) {
         this.email = email;
         this.password = password;
+    }
+
+    public Long getId() {
+        return this.id;
+    }
+
+    public String getEmail() {
+        return this.email;
+    }
+
+    public boolean isPasswordMatch(PasswordEncoder encoder, String rawPassword) {
+        return encoder.matches(rawPassword, this.password);
     }
 }
