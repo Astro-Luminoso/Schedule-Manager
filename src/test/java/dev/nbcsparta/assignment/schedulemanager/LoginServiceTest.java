@@ -1,5 +1,6 @@
 package dev.nbcsparta.assignment.schedulemanager;
 
+import dev.nbcsparta.assignment.schedulemanager.config.PasswordEncoder;
 import dev.nbcsparta.assignment.schedulemanager.dto.SessionUser;
 import dev.nbcsparta.assignment.schedulemanager.dto.request.PostLoginRequest;
 import dev.nbcsparta.assignment.schedulemanager.entity.Author;
@@ -15,6 +16,8 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
 
+import java.util.Optional;
+
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -23,14 +26,18 @@ public class LoginServiceTest {
     @Mock
     private AuthorRepository authorRepository;
 
+    @Mock
+    private PasswordEncoder encoder;
+
     @InjectMocks
     private LoginService loginService;
 
     @Test
     public void testLoginAndSuccess() {
         PostLoginRequest requestDummyUser = new PostLoginRequest("john.doe@dummy.com", "qwer1234");
-        when(authorRepository.findByEmail(requestDummyUser.email()))
-                .thenReturn(new Author(requestDummyUser.email(), requestDummyUser.password()));
+        Author dummyAuthor = new Author(requestDummyUser.email(), requestDummyUser.password());
+        when(authorRepository.findByEmail(requestDummyUser.email())).thenReturn(Optional.of(dummyAuthor));
+        when(encoder.matches(requestDummyUser.password(), "qwer1234")).thenReturn(true);
 
         SessionUser testUser = loginService.executeLogin(requestDummyUser);
         Assertions.assertNotNull(testUser);
@@ -40,8 +47,10 @@ public class LoginServiceTest {
     @Test
     public void testLoginAndPasswordNotMatch() {
         PostLoginRequest requestDummyUser = new PostLoginRequest("jane.doe@dummy.com", "qwer1234");
+        String storedPassword = "q1w2e3r4";
         when(authorRepository.findByEmail(requestDummyUser.email()))
-                .thenReturn(new Author(requestDummyUser.email(), "q1w2e3r4"));
+                .thenReturn(Optional.of(new Author(requestDummyUser.email(), storedPassword)));
+        when(encoder.matches(requestDummyUser.password(), storedPassword)).thenReturn(false);
 
         PasswordNotMatchException ex = Assertions.assertThrows(
                 PasswordNotMatchException.class,
@@ -52,9 +61,9 @@ public class LoginServiceTest {
 
     @Test
     public void testLoginAndAuthorNotFound() {
-        PostLoginRequest requestDummyUser = new PostLoginRequest("jane.doe@dummy.com", "qwer1234");
+        PostLoginRequest requestDummyUser = new PostLoginRequest("jane.dommy.com", "qwer1234");
         when(authorRepository.findByEmail(requestDummyUser.email()))
-                .thenReturn(null);
+                .thenReturn(Optional.empty());
 
         AuthorNotFoundException ex = Assertions.assertThrows(
                 AuthorNotFoundException.class,
