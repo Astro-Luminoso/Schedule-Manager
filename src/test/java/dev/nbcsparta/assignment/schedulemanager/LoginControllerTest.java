@@ -99,7 +99,7 @@ public class LoginControllerTest {
 
         MockHttpSession session = new MockHttpSession();
         session.setAttribute("LOGIN_USER", new SessionUser(1L, "jane.doe@dummy.org"));
-        mockMvc.perform(post("/logout"))
+        mockMvc.perform(post("/logout").session(session))
                 .andExpect(status().isOk())
                 .andExpect(request().sessionAttributeDoesNotExist("LOGIN_USER"));
 
