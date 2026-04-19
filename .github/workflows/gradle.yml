@@ -8,12 +8,13 @@
 name: Java CI with Gradle
 
 on:
+  push:
+    branches: [ "main", "ci/*" ]
   pull_request:
-    branches: [ "refactor/*" , "hotfix/*", "feat/*", "dev", "main" ]
+    branches: [ "refactor/*", "ci/*", "hotfix/*", "feat/*", "dev", "main" ]
 
 jobs:
   test:
-
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -46,7 +47,7 @@ jobs:
     #   run: gradle build
   build:
     needs: test
-    if: github.base_ref == 'main'
+    if: github.base_ref == 'main' || startsWith(github.event.head_commit.message, 'ci:')  # ci env changed so we need to test it all
     runs-on: ubuntu-latest
     permissions:
       contents: read
