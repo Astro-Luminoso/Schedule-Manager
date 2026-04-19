@@ -11,6 +11,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.http.HttpStatus;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
@@ -41,10 +42,10 @@ public class RegisterServiceTest {
     public void testRegisterAndDuplicatedEmailFound() {
 
         PostRegisterRequest reqBody = new PostRegisterRequest("testUser", "test.tester@dummy.dev", "qwer1234");
-        Author dummyAuthor = reqBody.toUser();
         when(authorRepository.existsByEmail(reqBody.email())).thenReturn(true);
 
-        Assertions.assertThrows(DuplicateUserException.class, () -> registerService.executeRegister(reqBody));
-
+        DuplicateUserException ex = Assertions.assertThrows(DuplicateUserException.class,
+                () -> registerService.executeRegister(reqBody));
+        Assertions.assertEquals(HttpStatus.BAD_REQUEST, ex.getStatus());
     }
 }
