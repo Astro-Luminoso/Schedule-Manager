@@ -1,0 +1,25 @@
+package dev.nbcsparta.assignment.schedulemanager.controller;
+
+import dev.nbcsparta.assignment.schedulemanager.dto.request.PostRegisterRequest;
+import dev.nbcsparta.assignment.schedulemanager.service.RegisterService;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+
+@Controller
+public class RegisterController {
+
+    private final RegisterService registerService;
+
+    public RegisterController(RegisterService registerService) {
+        this.registerService = registerService;
+    }
+
+    @PostMapping("/register")
+    public ResponseEntity<Void> register(@RequestBody PostRegisterRequest reqBody) {
+        // TODO: Implement Register Controller
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+    }
+}
