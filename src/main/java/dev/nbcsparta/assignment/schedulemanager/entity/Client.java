@@ -42,6 +42,10 @@ public class Client {
         return this.id;
     }
 
+    public String getUserName() {
+        return this.userName;
+    }
+
     public String getEmail() {
         return this.email;
     }

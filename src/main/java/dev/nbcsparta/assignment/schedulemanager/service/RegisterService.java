@@ -1,6 +1,8 @@
 package dev.nbcsparta.assignment.schedulemanager.service;
 
 import dev.nbcsparta.assignment.schedulemanager.dto.request.PostRegisterRequest;
+import dev.nbcsparta.assignment.schedulemanager.dto.response.SimpleClientResponse;
+import dev.nbcsparta.assignment.schedulemanager.entity.Client;
 import dev.nbcsparta.assignment.schedulemanager.exception.DuplicateUserException;
 import dev.nbcsparta.assignment.schedulemanager.repository.ClientRepository;
 import org.springframework.http.HttpStatus;
@@ -15,10 +17,12 @@ public class RegisterService {
         this.clientRepository = clientRepository;
     }
 
-    public void executeRegister(PostRegisterRequest reqBody) {
+    public SimpleClientResponse executeRegister(PostRegisterRequest reqBody) {
         if(clientRepository.existsByEmail(reqBody.email())) {
             throw new DuplicateUserException(HttpStatus.BAD_REQUEST);
         }
-        clientRepository.save(reqBody.toUser());
+
+        Client client = clientRepository.save(reqBody.toUser());
+        return SimpleClientResponse.from(client.getUserName(), client.getEmail());
     }
 }
