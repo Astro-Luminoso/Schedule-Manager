@@ -105,4 +105,10 @@ public class LoginControllerTest {
 
         Assertions.assertTrue(session.isInvalid());
     }
+    @Test
+    public void testExecuteLogoutWithNoSessionAndSuccess() throws Exception {
+
+        mockMvc.perform(post("/logout"))
+                .andExpect(status().isOk());
+    }
 }
