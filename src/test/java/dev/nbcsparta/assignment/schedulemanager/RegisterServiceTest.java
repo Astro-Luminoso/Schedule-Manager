@@ -1,6 +1,7 @@
 package dev.nbcsparta.assignment.schedulemanager;
 
 import dev.nbcsparta.assignment.schedulemanager.dto.request.PostRegisterRequest;
+import dev.nbcsparta.assignment.schedulemanager.dto.response.SimpleClientResponse;
 import dev.nbcsparta.assignment.schedulemanager.entity.Client;
 import dev.nbcsparta.assignment.schedulemanager.exception.DuplicateUserException;
 import dev.nbcsparta.assignment.schedulemanager.repository.ClientRepository;
@@ -33,8 +34,9 @@ public class RegisterServiceTest {
         when(clientRepository.existsByEmail(reqBody.email())).thenReturn(false);
         when(clientRepository.save(any(Client.class))).thenReturn(dummyAuthor);
 
-        registerService.executeRegister(reqBody);
-
+        SimpleClientResponse dummyResBody = registerService.executeRegister(reqBody);
+        Assertions.assertNotNull(dummyResBody);
+        Assertions.assertEquals(SimpleClientResponse.class, dummyResBody.getClass());
         verify(clientRepository).save(any(Client.class));
     }
 
