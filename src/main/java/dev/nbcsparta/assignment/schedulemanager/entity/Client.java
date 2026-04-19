@@ -9,11 +9,14 @@ import java.time.LocalDateTime;
 
 @Entity
 @EntityListeners(EnableJpaAuditing.class)
-public class Author {
+public class Client {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @Column(nullable = false)
+    private String userName;
 
     @Column(nullable = false)
     private String email;
@@ -26,16 +29,21 @@ public class Author {
     private LocalDateTime updatedDate;
 
     // JPA Empty constructor
-    protected Author() {
+    protected Client() {
     }
 
-    public Author(String email, String password) {
+    public Client(String userName, String email, String password) {
+        this.userName = userName;
         this.email = email;
         this.password = password;
     }
 
     public Long getId() {
         return this.id;
+    }
+
+    public String getUserName() {
+        return this.userName;
     }
 
     public String getEmail() {
