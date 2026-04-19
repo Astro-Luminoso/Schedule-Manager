@@ -35,7 +35,7 @@ public class LoginServiceTest {
     @Test
     public void testLoginAndSuccess() {
         PostLoginRequest requestDummyUser = new PostLoginRequest("john.doe@dummy.com", "qwer1234");
-        Author dummyAuthor = new Author(requestDummyUser.email(), requestDummyUser.password());
+        Author dummyAuthor = new Author("John Doe", requestDummyUser.email(), requestDummyUser.password());
         when(authorRepository.findByEmail(requestDummyUser.email())).thenReturn(Optional.of(dummyAuthor));
         when(encoder.matches(requestDummyUser.password(), "qwer1234")).thenReturn(true);
 
@@ -49,7 +49,7 @@ public class LoginServiceTest {
         PostLoginRequest requestDummyUser = new PostLoginRequest("jane.doe@dummy.com", "qwer1234");
         String storedPassword = "q1w2e3r4";
         when(authorRepository.findByEmail(requestDummyUser.email()))
-                .thenReturn(Optional.of(new Author(requestDummyUser.email(), storedPassword)));
+                .thenReturn(Optional.of(new Author("Jane Doe", requestDummyUser.email(), storedPassword)));
         when(encoder.matches(requestDummyUser.password(), storedPassword)).thenReturn(false);
 
         PasswordNotMatchException ex = Assertions.assertThrows(

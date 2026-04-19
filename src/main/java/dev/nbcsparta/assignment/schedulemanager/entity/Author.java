@@ -16,6 +16,9 @@ public class Author {
     private Long id;
 
     @Column(nullable = false)
+    private String userName;
+
+    @Column(nullable = false)
     private String email;
 
     @Column(nullable = false)
@@ -29,7 +32,8 @@ public class Author {
     protected Author() {
     }
 
-    public Author(String email, String password) {
+    public Author(String userName, String email, String password) {
+        this.userName = userName;
         this.email = email;
         this.password = password;
     }
