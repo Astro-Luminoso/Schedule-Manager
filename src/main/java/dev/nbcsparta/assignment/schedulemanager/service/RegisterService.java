@@ -2,23 +2,23 @@ package dev.nbcsparta.assignment.schedulemanager.service;
 
 import dev.nbcsparta.assignment.schedulemanager.dto.request.PostRegisterRequest;
 import dev.nbcsparta.assignment.schedulemanager.exception.DuplicateUserException;
-import dev.nbcsparta.assignment.schedulemanager.repository.AuthorRepository;
+import dev.nbcsparta.assignment.schedulemanager.repository.ClientRepository;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 @Service
 public class RegisterService {
 
-    private final AuthorRepository authorRepository;
+    private final ClientRepository clientRepository;
 
-    public RegisterService(AuthorRepository authorRepository) {
-        this.authorRepository = authorRepository;
+    public RegisterService(ClientRepository clientRepository) {
+        this.clientRepository = clientRepository;
     }
 
     public void executeRegister(PostRegisterRequest reqBody) {
-        if(authorRepository.existsByEmail(reqBody.email())) {
+        if(clientRepository.existsByEmail(reqBody.email())) {
             throw new DuplicateUserException(HttpStatus.BAD_REQUEST);
         }
-        authorRepository.save(reqBody.toUser());
+        clientRepository.save(reqBody.toUser());
     }
 }

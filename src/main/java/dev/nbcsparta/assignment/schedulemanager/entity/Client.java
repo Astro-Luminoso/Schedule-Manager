@@ -9,7 +9,7 @@ import java.time.LocalDateTime;
 
 @Entity
 @EntityListeners(EnableJpaAuditing.class)
-public class Author {
+public class Client {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -29,10 +29,10 @@ public class Author {
     private LocalDateTime updatedDate;
 
     // JPA Empty constructor
-    protected Author() {
+    protected Client() {
     }
 
-    public Author(String userName, String email, String password) {
+    public Client(String userName, String email, String password) {
         this.userName = userName;
         this.email = email;
         this.password = password;

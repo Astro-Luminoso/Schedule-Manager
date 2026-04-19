@@ -25,16 +25,16 @@ public class Event {
     private LocalDateTime updatedDate;
 
     @ManyToOne
-    private Author author;
+    private Client author;
 
     // JPA Empty constructor
     protected Event() {
     }
 
-    public Event(String title, String description, Author author) {
+    public Event(String title, String description, Client client) {
         this.title = title;
         this.description = description;
-        this.author = author;
+        this.author = client;
     }
 
 

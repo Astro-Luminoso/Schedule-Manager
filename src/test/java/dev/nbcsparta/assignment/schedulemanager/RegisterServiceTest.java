@@ -1,9 +1,9 @@
 package dev.nbcsparta.assignment.schedulemanager;
 
 import dev.nbcsparta.assignment.schedulemanager.dto.request.PostRegisterRequest;
-import dev.nbcsparta.assignment.schedulemanager.entity.Author;
+import dev.nbcsparta.assignment.schedulemanager.entity.Client;
 import dev.nbcsparta.assignment.schedulemanager.exception.DuplicateUserException;
-import dev.nbcsparta.assignment.schedulemanager.repository.AuthorRepository;
+import dev.nbcsparta.assignment.schedulemanager.repository.ClientRepository;
 import dev.nbcsparta.assignment.schedulemanager.service.RegisterService;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -21,28 +21,28 @@ import static org.mockito.Mockito.when;
 public class RegisterServiceTest {
 
     @Mock
-    private AuthorRepository authorRepository;
+    private ClientRepository clientRepository;
 
     @InjectMocks
-    private RegisterService registerService;
+    private RegisterService registerService;    /* mock jpa meta model - jpa auditing is enabled */
 
     @Test
     public void testRegisterAndSuccess() {
         PostRegisterRequest reqBody = new PostRegisterRequest("testUser", "test.tester@dummy.dev", "qwer1234");
-        Author dummyAuthor = reqBody.toUser();
-        when(authorRepository.existsByEmail(reqBody.email())).thenReturn(false);
-        when(authorRepository.save(any(Author.class))).thenReturn(dummyAuthor);
+        Client dummyAuthor = reqBody.toUser();
+        when(clientRepository.existsByEmail(reqBody.email())).thenReturn(false);
+        when(clientRepository.save(any(Client.class))).thenReturn(dummyAuthor);
 
         registerService.executeRegister(reqBody);
 
-        verify(authorRepository).save(any(Author.class));
+        verify(clientRepository).save(any(Client.class));
     }
 
     @Test
     public void testRegisterAndDuplicatedEmailFound() {
 
         PostRegisterRequest reqBody = new PostRegisterRequest("testUser", "test.tester@dummy.dev", "qwer1234");
-        when(authorRepository.existsByEmail(reqBody.email())).thenReturn(true);
+        when(clientRepository.existsByEmail(reqBody.email())).thenReturn(true);
 
         DuplicateUserException ex = Assertions.assertThrows(DuplicateUserException.class,
                 () -> registerService.executeRegister(reqBody));

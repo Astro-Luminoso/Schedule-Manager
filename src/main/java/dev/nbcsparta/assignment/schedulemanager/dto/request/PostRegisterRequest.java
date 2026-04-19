@@ -1,6 +1,6 @@
 package dev.nbcsparta.assignment.schedulemanager.dto.request;
 
-import dev.nbcsparta.assignment.schedulemanager.entity.Author;
+import dev.nbcsparta.assignment.schedulemanager.entity.Client;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
@@ -17,7 +17,7 @@ public record PostRegisterRequest(
         @Size(min = 8)
         String password
 ) {
-    public Author toUser() {
-        return new Author(userName, email, password);
+    public Client toUser() {
+        return new Client(userName, email, password);
     }
 }
