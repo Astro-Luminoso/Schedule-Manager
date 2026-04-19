@@ -1,7 +1,9 @@
 package dev.nbcsparta.assignment.schedulemanager.controller;
 
 import dev.nbcsparta.assignment.schedulemanager.dto.request.PostRegisterRequest;
+import dev.nbcsparta.assignment.schedulemanager.dto.response.SimpleClientResponse;
 import dev.nbcsparta.assignment.schedulemanager.service.RegisterService;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -18,8 +20,10 @@ public class RegisterController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<Void> register(@RequestBody PostRegisterRequest reqBody) {
-        // TODO: Implement Register Controller
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+    public ResponseEntity<SimpleClientResponse> register(
+            @Valid @RequestBody PostRegisterRequest reqBody
+    ) {
+        SimpleClientResponse resBody = registerService.executeRegister(reqBody);
+        return ResponseEntity.status(HttpStatus.CREATED).body(resBody);
     }
 }
