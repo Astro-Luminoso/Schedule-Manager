@@ -54,7 +54,7 @@ public class EventControllerTest {
                         .content(new ObjectMapper()
                                 .writeValueAsString(
                                         new PostEventRequest("Test Event", "This is a test event."))))
-                .andExpect(status().isForbidden());
+                .andExpect(status().isUnauthorized());
 
         mockMvc.perform(post("/events")
                         .session(new MockHttpSession()) /* with no LOGIN_USER attribute */
@@ -62,7 +62,7 @@ public class EventControllerTest {
                         .content(new ObjectMapper()
                                 .writeValueAsString(
                                         new PostEventRequest("Test Event", "This is a test event."))))
-                .andExpect(status().isForbidden());
+                .andExpect(status().isUnauthorized());
     }
 
     @Test
@@ -76,7 +76,7 @@ public class EventControllerTest {
                         .content(new ObjectMapper()
                                 .writeValueAsString(
                                         new PostEventRequest("Tes", "This is a test event."))))
-                .andExpect(status().isForbidden());
+                .andExpect(status().isBadRequest());
         mockMvc.perform(post("/events")
                         .session(session)
                         .contentType(MediaType.APPLICATION_JSON)
