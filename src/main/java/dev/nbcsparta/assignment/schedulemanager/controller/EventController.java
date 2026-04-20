@@ -1,6 +1,7 @@
 package dev.nbcsparta.assignment.schedulemanager.controller;
 
 import dev.nbcsparta.assignment.schedulemanager.dto.SessionUser;
+import dev.nbcsparta.assignment.schedulemanager.dto.request.PatchEventRequest;
 import dev.nbcsparta.assignment.schedulemanager.dto.request.PostEventRequest;
 import dev.nbcsparta.assignment.schedulemanager.dto.response.CommonEventResponse;
 import dev.nbcsparta.assignment.schedulemanager.dto.response.EventListResponse;
@@ -44,7 +45,7 @@ public class EventController {
     @PatchMapping("/{id}")
     public ResponseEntity<CommonEventResponse> updateEvent(
             @PathVariable Long id,
-            @Valid @RequestBody PostEventRequest reqBody,
+            @RequestBody PatchEventRequest reqBody,
             @SessionAttribute(name = "LOGIN_USER", required = false) SessionUser sessionUser
     ) {
         if (sessionUser == null) {
@@ -52,5 +53,17 @@ public class EventController {
         }
         CommonEventResponse resBody = eventService.updateEvent(id, reqBody, sessionUser.id());
         return ResponseEntity.status(HttpStatus.OK).body(resBody);
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteEvent(
+            @PathVariable Long id,
+            @SessionAttribute(name = "LOGIN_USER", required = false) SessionUser sessionUser
+    ) {
+        if (sessionUser == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+        eventService.deleteEvent(id, sessionUser.id());
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 }

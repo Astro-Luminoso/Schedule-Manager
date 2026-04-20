@@ -1,11 +1,12 @@
 package dev.nbcsparta.assignment.schedulemanager.service;
 
+import dev.nbcsparta.assignment.schedulemanager.dto.request.PatchEventRequest;
 import dev.nbcsparta.assignment.schedulemanager.dto.request.PostEventRequest;
 import dev.nbcsparta.assignment.schedulemanager.dto.response.CommonEventResponse;
 import dev.nbcsparta.assignment.schedulemanager.dto.response.EventListResponse;
 import dev.nbcsparta.assignment.schedulemanager.entity.Client;
 import dev.nbcsparta.assignment.schedulemanager.entity.Event;
-import dev.nbcsparta.assignment.schedulemanager.exception.ClientNotAuthorizationException;
+import dev.nbcsparta.assignment.schedulemanager.exception.ClientNotAuthorisedException;
 import dev.nbcsparta.assignment.schedulemanager.exception.EventNotFoundException;
 import dev.nbcsparta.assignment.schedulemanager.repository.EventRepository;
 import jakarta.validation.Valid;
@@ -44,17 +45,29 @@ public class EventService {
 
     public CommonEventResponse updateEvent(
             Long id,
-            @Valid PostEventRequest reqBody,
+            @Valid PatchEventRequest reqBody,
             Long sessionUserId
     ) {
         Event event = eventRepository.findById(id)
                 .orElseThrow(() -> new EventNotFoundException(HttpStatus.NOT_FOUND, id));
 
         if (!event.getAuthor().getId().equals(sessionUserId)) {
-            throw new ClientNotAuthorizationException(HttpStatus.FORBIDDEN, sessionUserId, event.getAuthor().getId());
+            throw new ClientNotAuthorisedException(HttpStatus.FORBIDDEN, sessionUserId, event.getAuthor().getId());
         }
 
         event.updateEvent(reqBody.title(), reqBody.description());
         return CommonEventResponse.from(event);
+    }
+
+    public void deleteEvent(Long id, Long sessionUserId) {
+        Event event = eventRepository.findById(id)
+                .orElseThrow(() -> new EventNotFoundException(HttpStatus.NOT_FOUND, id));
+
+        long authorId = event.getAuthor().getId();
+        if (authorId != sessionUserId) {
+            throw new ClientNotAuthorisedException(HttpStatus.FORBIDDEN, sessionUserId, authorId);
+        }
+
+        eventRepository.delete(event);
     }
 }
