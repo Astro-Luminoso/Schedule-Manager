@@ -13,7 +13,10 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.test.util.ReflectionTestUtils;
+
+import java.time.LocalDateTime;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
@@ -43,6 +46,7 @@ public class EventServiceTest {
                 .thenAnswer(invocation -> {
                     Event savedEvent = invocation.getArgument(0);
                     ReflectionTestUtils.setField(savedEvent, "id", 1L);
+                    ReflectionTestUtils.setField(savedEvent, "updatedDate", LocalDateTime.now());
                     return savedEvent;
                 });
 
@@ -53,5 +57,6 @@ public class EventServiceTest {
         Assertions.assertEquals(request.title(), dummyResBody.title());
         Assertions.assertEquals(request.description(), dummyResBody.description());
         Assertions.assertEquals(dummyClient.getUserName(), dummyResBody.authorName());
+        Assertions.assertNotNull(dummyResBody.date());
     }
 }
