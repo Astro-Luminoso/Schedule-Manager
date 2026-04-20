@@ -37,6 +37,19 @@ public class Event {
         this.author = client;
     }
 
+    public Long getId() {
+        return this.id;
+    }
 
+    public String getTitle() {
+        return this.title;
+    }
 
+    public String getDescription() {
+        return this.description;
+    }
+
+    public String getAuthorName() {
+        return this.author.getUserName();
+    }
 }
