@@ -2,10 +2,13 @@ package dev.nbcsparta.assignment.schedulemanager.service;
 
 import dev.nbcsparta.assignment.schedulemanager.dto.request.PostEventRequest;
 import dev.nbcsparta.assignment.schedulemanager.dto.response.CommonEventResponse;
+import dev.nbcsparta.assignment.schedulemanager.dto.response.EventListResponse;
 import dev.nbcsparta.assignment.schedulemanager.entity.Client;
 import dev.nbcsparta.assignment.schedulemanager.entity.Event;
 import dev.nbcsparta.assignment.schedulemanager.repository.EventRepository;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 public class EventService {
@@ -24,5 +27,11 @@ public class EventService {
         Event newEvent = eventRepository.save(event);
 
         return CommonEventResponse.from(newEvent);
+    }
+
+    public EventListResponse getEvents(Long authorId) {
+        List<Event> events = (authorId == null) ? eventRepository.findAll() : eventRepository.findByAuthorId(authorId);
+
+        return EventListResponse.from(events.stream().map(CommonEventResponse::from).toList());
     }
 }
