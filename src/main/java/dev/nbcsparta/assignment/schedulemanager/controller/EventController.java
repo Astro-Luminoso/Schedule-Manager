@@ -29,7 +29,7 @@ public class EventController {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
         CommonEventResponse resBody = eventService.createEvent(reqBody, sessionUser.id());
-        return ResponseEntity.status(201).body(resBody);
+        return ResponseEntity.status(HttpStatus.CREATED).body(resBody);
     }
 
     // UNIT test is not implemented for the below method because it is too simple to test.
