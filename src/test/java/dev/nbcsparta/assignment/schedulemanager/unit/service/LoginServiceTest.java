@@ -41,7 +41,8 @@ public class LoginServiceTest {
 
         SessionUser testUser = loginService.executeLogin(requestDummyUser);
         Assertions.assertNotNull(testUser);
-        Assertions.assertEquals(SessionUser.class, testUser.getClass());
+        Assertions.assertEquals(testUser.email(), dummyAuthor.getEmail());
+        Assertions.assertEquals(testUser.id(), dummyAuthor.getId());
     }
 
     @Test

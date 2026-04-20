@@ -35,9 +35,11 @@ public class RegisterServiceTest {
         when(clientRepository.save(any(Client.class))).thenReturn(dummyAuthor);
 
         SimpleClientResponse dummyResBody = registerService.executeRegister(reqBody);
-        Assertions.assertNotNull(dummyResBody);
-        Assertions.assertEquals(SimpleClientResponse.class, dummyResBody.getClass());
+
         verify(clientRepository).save(any(Client.class));
+        Assertions.assertNotNull(dummyResBody);
+        Assertions.assertEquals(dummyResBody.userName(), dummyAuthor.getUserName());
+        Assertions.assertEquals(dummyResBody.email(), dummyAuthor.getEmail());
     }
 
     @Test
