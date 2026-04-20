@@ -11,7 +11,7 @@ on:
   push:
     branches: [ "main", "ci/*" ]
   pull_request:
-    branches: [ "refactor/*", "ci/*", "hotfix/*", "feat/*", "dev", "main" ]
+    branches: [ "feat/*", "dev", "main" ]
 
 jobs:
   test:
@@ -47,7 +47,8 @@ jobs:
     #   run: gradle build
   build:
     needs: test
-    if: github.base_ref == 'main' || startsWith(github.event.head_commit.message, 'ci:')  # ci env changed so we need to test it all
+    if: github.ref_name == 'main' || 
+        startsWith(github.event.head_commit.message, 'ci:') # assume all ci pipeline is changed thus, we test all of this
     runs-on: ubuntu-latest
     permissions:
       contents: read
