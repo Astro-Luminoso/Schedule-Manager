@@ -5,6 +5,7 @@ import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 @Entity
 @EntityListeners(EnableJpaAuditing.class)
@@ -47,6 +48,10 @@ public class Event {
 
     public String getDescription() {
         return this.description;
+    }
+
+    public String getDate() {
+        return this.updatedDate.format(DateTimeFormatter.BASIC_ISO_DATE);
     }
 
     public String getAuthorName() {

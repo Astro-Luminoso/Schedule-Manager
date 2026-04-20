@@ -21,8 +21,8 @@ public class EventService {
     public CommonEventResponse createEvent(PostEventRequest reqBody, long clientId) {
         Client author = clientService.retrieveClientById(clientId);
         Event event =  new Event(reqBody.title(), reqBody.description(), author);
-        event = eventRepository.save(event);
+        Event newEvent = eventRepository.save(event);
 
-        return CommonEventResponse.from(event);
+        return CommonEventResponse.from(newEvent);
     }
 }
