@@ -57,4 +57,13 @@ public class Event {
     public String getAuthorName() {
         return this.author.getUserName();
     }
+
+    public Client getAuthor() {
+        return this.author;
+    }
+
+    public void updateEvent(String title, String description) {
+        this.title = title;
+        this.description = description;
+    }
 }

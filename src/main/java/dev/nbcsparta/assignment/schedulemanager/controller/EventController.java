@@ -41,5 +41,16 @@ public class EventController {
         return ResponseEntity.status(HttpStatus.OK).body(resBody);
     }
 
-
+    @PatchMapping("/{id}")
+    public ResponseEntity<CommonEventResponse> updateEvent(
+            @PathVariable Long id,
+            @Valid @RequestBody PostEventRequest reqBody,
+            @SessionAttribute(name = "LOGIN_USER", required = false) SessionUser sessionUser
+    ) {
+        if (sessionUser == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+        CommonEventResponse resBody = eventService.updateEvent(id, reqBody, sessionUser.id());
+        return ResponseEntity.status(HttpStatus.OK).body(resBody);
+    }
 }
