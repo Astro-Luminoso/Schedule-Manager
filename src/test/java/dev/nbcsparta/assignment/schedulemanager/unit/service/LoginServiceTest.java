@@ -1,4 +1,4 @@
-package dev.nbcsparta.assignment.schedulemanager;
+package dev.nbcsparta.assignment.schedulemanager.unit.service;
 
 import dev.nbcsparta.assignment.schedulemanager.config.PasswordEncoder;
 import dev.nbcsparta.assignment.schedulemanager.dto.SessionUser;
