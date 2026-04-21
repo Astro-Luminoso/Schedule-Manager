@@ -1,4 +1,4 @@
-package dev.nbcsparta.assignment.schedulemanager;
+package dev.nbcsparta.assignment.schedulemanager.unit.controller;
 
 import dev.nbcsparta.assignment.schedulemanager.controller.LoginController;
 import dev.nbcsparta.assignment.schedulemanager.dto.SessionUser;
