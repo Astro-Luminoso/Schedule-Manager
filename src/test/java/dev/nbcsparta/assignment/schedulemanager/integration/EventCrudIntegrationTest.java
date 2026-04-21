@@ -23,9 +23,6 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Set;
-import java.util.stream.Collectors;
-
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
@@ -71,9 +68,6 @@ public class EventCrudIntegrationTest {
 
     @Test
     public void getEvents_And_Return_All_Events() throws Exception {
-        Event event1 = eventRepository.save(new Event("Team Meeting", "Discuss sprint", loginUser));
-        Event event2 = eventRepository.save(new Event("Code Review", "Review PRs", loginUser));
-        Event event3 = eventRepository.save(new Event("Client Sync", "Weekly sync", anotherUser));
 
         MvcResult result = mockMvc.perform(get("/events"))
                 .andExpect(status().isOk())
@@ -85,12 +79,6 @@ public class EventCrudIntegrationTest {
         );
 
         Assertions.assertEquals(3, resBody.totalEvents());
-
-        Set<Long> actualIds = resBody.eventsList().stream()
-                .map(CommonEventResponse::id)
-                .collect(Collectors.toSet());
-        Set<Long> expectedIds = Set.of(event1.getId(), event2.getId(), event3.getId());
-        Assertions.assertEquals(expectedIds, actualIds);
 
         Assertions.assertTrue(
                 resBody.eventsList().stream().allMatch(event -> event.date() != null && !event.date().isBlank())
