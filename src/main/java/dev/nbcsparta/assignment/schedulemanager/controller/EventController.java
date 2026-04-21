@@ -42,6 +42,12 @@ public class EventController {
         return ResponseEntity.status(HttpStatus.OK).body(resBody);
     }
 
+    @GetMapping("/{id}")
+    public ResponseEntity<CommonEventResponse> getEventById(@PathVariable Long id) {
+        CommonEventResponse resBody = eventService.getEventById(id);
+        return ResponseEntity.status(HttpStatus.OK).body(resBody);
+    }
+
     @PatchMapping("/{id}")
     public ResponseEntity<CommonEventResponse> updateEvent(
             @PathVariable Long id,
