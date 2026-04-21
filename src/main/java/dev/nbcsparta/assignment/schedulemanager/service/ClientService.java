@@ -1,6 +1,7 @@
 package dev.nbcsparta.assignment.schedulemanager.service;
 
 import dev.nbcsparta.assignment.schedulemanager.dto.response.ClientsInList;
+import dev.nbcsparta.assignment.schedulemanager.dto.response.CommonClientDetail;
 import dev.nbcsparta.assignment.schedulemanager.entity.Client;
 import dev.nbcsparta.assignment.schedulemanager.exception.AuthorNotFoundException;
 import dev.nbcsparta.assignment.schedulemanager.repository.ClientRepository;
@@ -19,9 +20,14 @@ public class ClientService {
     }
 
     @Transactional(readOnly = true)
-    public Client retrieveClientById(long clientId) {
+    public Client getClient(long clientId) {
         return clientRepository.findById(clientId)
                 .orElseThrow(() -> new AuthorNotFoundException(HttpStatus.NOT_FOUND));
+    }
+
+    @Transactional(readOnly = true)
+    public CommonClientDetail retrieveClientById(long id) {
+        return new CommonClientDetail(this.getClient(id));
     }
 
     @Transactional(readOnly = true)

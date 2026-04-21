@@ -1,5 +1,6 @@
 package dev.nbcsparta.assignment.schedulemanager.advisor;
 
+import dev.nbcsparta.assignment.schedulemanager.exception.AuthorNotFoundException;
 import dev.nbcsparta.assignment.schedulemanager.exception.ClientNotAuthorisedException;
 import dev.nbcsparta.assignment.schedulemanager.exception.EventNotFoundException;
 import dev.nbcsparta.assignment.schedulemanager.exception.PasswordNotMatchException;
@@ -22,6 +23,11 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(ClientNotAuthorisedException.class)
     public ResponseEntity<Void> handleClientNotAuthorisedException(ClientNotAuthorisedException ex) {
+        return ResponseEntity.status(ex.getStatus()).build();
+    }
+
+    @ExceptionHandler(AuthorNotFoundException.class)
+    public ResponseEntity<Void> handleAuthorNotFoundException(AuthorNotFoundException ex) {
         return ResponseEntity.status(ex.getStatus()).build();
     }
 }

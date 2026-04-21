@@ -29,7 +29,7 @@ public class EventService {
     }
 
     public CommonEventResponse createEvent(PostEventRequest reqBody, long clientId) {
-        Client author = clientService.retrieveClientById(clientId);
+        Client author = clientService.getClient(clientId);
         Event event =  new Event(reqBody.title(), reqBody.description(), author);
         Event newEvent = eventRepository.save(event);
 

@@ -43,13 +43,13 @@ public class ClientServiceTest {
     }
 
     @Test
-    public void testRetrieveClientByIdAndSuccess() {
+    public void testGetClientAndSuccess() {
         long dummyClientId = 1L;
         Client dummyClient = new Client("Test User", "jane.doe@dummy.dev", "qwer1234");
 
         when(clientRepository.findById(dummyClientId)).thenReturn(Optional.of(dummyClient));
 
-        Client dummyResult = clientService.retrieveClientById(dummyClientId);
+        Client dummyResult = clientService.getClient(dummyClientId);
 
         Assertions.assertNotNull(dummyResult);
         Assertions.assertEquals(dummyClient.getUserName(), dummyResult.getUserName());
@@ -57,7 +57,7 @@ public class ClientServiceTest {
     }
 
     @Test
-    public void testRetrieveClientByIdAndInvalidIdProvided() {
+    public void testGetClientProvided() {
         long dummyClientId = 1L;
 
         when(clientRepository.findById(dummyClientId)).thenReturn(Optional.empty());
