@@ -27,6 +27,7 @@ public class Event {
     private LocalDateTime updatedDate;
 
     @ManyToOne
+    @JoinColumn(name = "author_id", nullable = false)
     private Client author;
 
     // JPA Empty constructor
