@@ -4,7 +4,6 @@ import dev.nbcsparta.assignment.schedulemanager.config.PasswordEncoder;
 import jakarta.persistence.*;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
-import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -58,5 +57,10 @@ public class Client {
 
     public boolean isPasswordMatch(PasswordEncoder encoder, String rawPassword) {
         return encoder.matches(rawPassword, this.password);
+    }
+
+    public void updateClientDetail(String userName, String email) {
+        this.userName = userName;
+        this.email = email;
     }
 }
