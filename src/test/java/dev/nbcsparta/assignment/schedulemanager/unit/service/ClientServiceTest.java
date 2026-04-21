@@ -1,8 +1,12 @@
 package dev.nbcsparta.assignment.schedulemanager.unit.service;
 
+import dev.nbcsparta.assignment.schedulemanager.config.PasswordEncoder;
+import dev.nbcsparta.assignment.schedulemanager.dto.request.UpdateClientDetail;
 import dev.nbcsparta.assignment.schedulemanager.dto.response.ClientsInList;
+import dev.nbcsparta.assignment.schedulemanager.dto.response.CommonClientDetail;
 import dev.nbcsparta.assignment.schedulemanager.entity.Client;
 import dev.nbcsparta.assignment.schedulemanager.exception.AuthorNotFoundException;
+import dev.nbcsparta.assignment.schedulemanager.exception.ClientNotAuthorisedException;
 import dev.nbcsparta.assignment.schedulemanager.repository.ClientRepository;
 import dev.nbcsparta.assignment.schedulemanager.service.ClientService;
 import org.junit.jupiter.api.Assertions;
@@ -12,7 +16,9 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
+import org.springframework.test.util.ReflectionTestUtils;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -26,6 +32,9 @@ public class ClientServiceTest {
 
     @InjectMocks
     private ClientService clientService;
+
+    @Mock
+    private PasswordEncoder encoder;
 
     @Test
     public void testRetrieveAllClientsAndSuccess() {
@@ -63,6 +72,55 @@ public class ClientServiceTest {
         when(clientRepository.findById(dummyClientId)).thenReturn(Optional.empty());
 
         AuthorNotFoundException ex = Assertions.assertThrows(AuthorNotFoundException.class, () -> clientService.retrieveClientById(dummyClientId));
+        Assertions.assertEquals(HttpStatus.NOT_FOUND, ex.getStatus());
+    }
+
+    @Test
+    public void testPutClientByIdAndSuccess() {
+        long dummyClientId = 1L;
+        Client dummyClient = new Client("Old Name", "old@dummy.dev", "qwer1234");
+        UpdateClientDetail reqBody = new UpdateClientDetail("New Name", "new@dummy.dev", "qwer1234");
+
+        ReflectionTestUtils.setField(dummyClient, "id", dummyClientId);
+        ReflectionTestUtils.setField(dummyClient, "updatedDate", LocalDateTime.now());
+
+        when(clientRepository.findById(dummyClientId)).thenReturn(Optional.of(dummyClient));
+        when(encoder.matches(reqBody.oldPassword(), "qwer1234")).thenReturn(true);
+
+        CommonClientDetail result = clientService.putClientById(dummyClientId, reqBody, dummyClientId);
+
+        Assertions.assertNotNull(result);
+        Assertions.assertEquals(dummyClientId, result.id());
+        Assertions.assertEquals(reqBody.userName(), result.userName());
+        Assertions.assertEquals(reqBody.email(), result.email());
+    }
+
+    @Test
+    public void testPutClientByIdAndForbidden() {
+        long clientId = 1L;
+        long anotherSessionId = 2L;
+        UpdateClientDetail reqBody = new UpdateClientDetail("New Name", "new@dummy.dev", "q1w2e3r4");
+
+        ClientNotAuthorisedException ex = Assertions.assertThrows(
+                ClientNotAuthorisedException.class,
+                () -> clientService.putClientById(clientId, reqBody, anotherSessionId)
+        );
+
+        Assertions.assertEquals(HttpStatus.FORBIDDEN, ex.getStatus());
+    }
+
+    @Test
+    public void testPutClientByIdAndNotFound() {
+        long clientId = 1L;
+        UpdateClientDetail reqBody = new UpdateClientDetail("New Name", "new@dummy.dev", "qwer1234");
+
+        when(clientRepository.findById(clientId)).thenReturn(Optional.empty());
+
+        AuthorNotFoundException ex = Assertions.assertThrows(
+                AuthorNotFoundException.class,
+                () -> clientService.putClientById(clientId, reqBody, clientId)
+        );
+
         Assertions.assertEquals(HttpStatus.NOT_FOUND, ex.getStatus());
     }
 }
