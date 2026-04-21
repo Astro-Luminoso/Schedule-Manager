@@ -33,7 +33,7 @@ public class ClientIntegrationTest {
 
     @BeforeEach
     public void beforeEach() {
-        for (int i = 1; i <= 10; i++) {
+        for (int i = 1; i <= 3; i++) {
             clientRepository.save(new Client(
                     "Test User " + i,
                     "user" + i + "@dummy.dev",
@@ -54,14 +54,15 @@ public class ClientIntegrationTest {
         );
 
         Assertions.assertNotNull(resBody);
-        Assertions.assertEquals(10, resBody.total());
+        Assertions.assertEquals(3, resBody.total());
         Assertions.assertNotNull(resBody.clientsList());
         Assertions.assertFalse(resBody.clientsList().isEmpty());
     }
 
     @Test
     public void test_retrieve_Client_by_id() throws Exception {
-        MvcResult mvcResult = mockMvc.perform(get("/users/3"))
+        Client client = clientRepository.save(new Client("Test User 4", "user4@dummy.dev", "q1w2e3r4"));
+        MvcResult mvcResult = mockMvc.perform(get("/users/{id}", client.getId()))
                 .andExpect(status().isOk())
                 .andReturn();
 
@@ -70,8 +71,8 @@ public class ClientIntegrationTest {
                 CommonClientDetail.class
         );
 
-        Assertions.assertEquals("Test User 3", resBody.userName());
-        Assertions.assertEquals("user3@dummy.dev", resBody.email());
+        Assertions.assertEquals("Test User 4", resBody.userName());
+        Assertions.assertEquals("user4@dummy.dev", resBody.email());
         Assertions.assertNotNull(resBody.date());
         Assertions.assertFalse(resBody.date().isBlank());
     }
