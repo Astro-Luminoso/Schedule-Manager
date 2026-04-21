@@ -1,5 +1,6 @@
 package dev.nbcsparta.assignment.schedulemanager.unit.service;
 
+import dev.nbcsparta.assignment.schedulemanager.dto.response.ClientsInList;
 import dev.nbcsparta.assignment.schedulemanager.entity.Client;
 import dev.nbcsparta.assignment.schedulemanager.exception.AuthorNotFoundException;
 import dev.nbcsparta.assignment.schedulemanager.repository.ClientRepository;
@@ -12,6 +13,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
 
+import java.util.List;
 import java.util.Optional;
 
 import static org.mockito.Mockito.when;
@@ -24,6 +26,21 @@ public class ClientServiceTest {
 
     @InjectMocks
     private ClientService clientService;
+
+    @Test
+    public void testRetrieveAllClientsAndSuccess() {
+        List<Client> dummyClients = List.of(
+                new Client("Test User1", "jane.doe@dummy.dev", "qwer1234"),
+                new Client("Test User2", "john.doe@dummy.dev", "asdf1234")
+        );
+
+        when(clientRepository.findAll()).thenReturn(dummyClients);
+
+        ClientsInList result = clientService.retrieveAllClients();
+
+        Assertions.assertNotNull(result);
+        Assertions.assertEquals(2, result.total());
+    }
 
     @Test
     public void testRetrieveClientByIdAndSuccess() {
