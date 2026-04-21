@@ -7,6 +7,7 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 @Entity
 @EntityListeners(AuditingEntityListener.class)
@@ -49,6 +50,10 @@ public class Client {
 
     public String getEmail() {
         return this.email;
+    }
+
+    public String getDate() {
+        return this.updatedDate.format(DateTimeFormatter.BASIC_ISO_DATE);
     }
 
     public boolean isPasswordMatch(PasswordEncoder encoder, String rawPassword) {
