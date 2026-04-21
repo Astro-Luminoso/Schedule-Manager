@@ -43,6 +43,14 @@ public class EventService {
         return EventListResponse.from(events.stream().map(CommonEventResponse::from).toList());
     }
 
+    @Transactional(readOnly = true)
+    public CommonEventResponse getEventById(Long id) {
+        Event event = eventRepository.findById(id)
+                .orElseThrow(() -> new EventNotFoundException(HttpStatus.NOT_FOUND, id));
+
+        return CommonEventResponse.from(event);
+    }
+
     public CommonEventResponse updateEvent(
             Long id,
             @Valid PatchEventRequest reqBody,

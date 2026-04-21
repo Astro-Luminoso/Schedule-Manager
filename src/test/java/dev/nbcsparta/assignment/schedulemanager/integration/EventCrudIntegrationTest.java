@@ -188,6 +188,29 @@ public class EventCrudIntegrationTest {
         Assertions.assertTrue(eventRepository.findById(existingEvent.getId()).isEmpty());
     }
 
+    @Test
+    public void get_Event_By_Id_And_Success() throws Exception {
+        Event existingEvent = eventRepository.save(new Event("Sample Event", "Sample Description", loginUser));
+
+        MvcResult result = mockMvc.perform(get("/events/{id}", existingEvent.getId()))
+                .andExpect(status().isOk())
+                .andReturn();
+
+        CommonEventResponse resBody = objectMapper.readValue(
+                result.getResponse().getContentAsString(),
+                CommonEventResponse.class
+        );
+
+        Assertions.assertEquals(existingEvent.getTitle(), resBody.title());
+        Assertions.assertEquals(existingEvent.getDescription(), resBody.description());
+    }
+
+    @Test
+    public void get_Event_By_Id_And_Not_Found() throws Exception {
+        mockMvc.perform(get("/events/{id}", 999999L))
+                .andExpect(status().isNotFound());
+    }
+
     private MockHttpSession loginAndGetSession(String email, String password) throws Exception {
         MvcResult result = mockMvc.perform(post("/login")
                         .contentType(MediaType.APPLICATION_JSON)

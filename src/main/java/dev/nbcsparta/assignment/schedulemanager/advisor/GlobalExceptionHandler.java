@@ -1,5 +1,6 @@
 package dev.nbcsparta.assignment.schedulemanager.advisor;
 
+import dev.nbcsparta.assignment.schedulemanager.exception.EventNotFoundException;
 import dev.nbcsparta.assignment.schedulemanager.exception.PasswordNotMatchException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -13,4 +14,8 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(ex.getStatus()).build();
     }
 
+    @ExceptionHandler(EventNotFoundException.class)
+    public ResponseEntity<Void> handleEventNotFoundException(EventNotFoundException ex) {
+        return ResponseEntity.status(ex.getStatus()).build();
+    }
 }
