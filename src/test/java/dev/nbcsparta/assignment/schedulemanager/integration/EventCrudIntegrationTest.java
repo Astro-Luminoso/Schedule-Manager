@@ -68,6 +68,9 @@ public class EventCrudIntegrationTest {
 
     @Test
     public void getEvents_And_Return_All_Events() throws Exception {
+        eventRepository.save(new Event("Team Meeting", "Discuss sprint", loginUser));
+        eventRepository.save(new Event("Code Review", "Review PRs", loginUser));
+        eventRepository.save(new Event("Client Sync", "Weekly sync", anotherUser));
 
         MvcResult result = mockMvc.perform(get("/events"))
                 .andExpect(status().isOk())
