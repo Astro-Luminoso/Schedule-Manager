@@ -11,6 +11,11 @@ public class ClientNotAuthorisedException extends RuntimeException {
         this.status = status;
     }
 
+    public ClientNotAuthorisedException(HttpStatus status) {
+        super("Unauthorised access to the resource");
+        this.status = status;
+    }
+
     public HttpStatus getStatus() {
         return this.status;
     }
