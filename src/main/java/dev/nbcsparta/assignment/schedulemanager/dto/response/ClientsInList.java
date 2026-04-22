@@ -8,7 +8,7 @@ public record ClientsInList(List<CommonClientDetail> clientsList, int total) {
 
     public static ClientsInList from(List<Client> data) {
         List<CommonClientDetail> clientsList = data.stream()
-                .map(CommonClientDetail::new)
+                .map(CommonClientDetail::from)
                 .toList();
         return new ClientsInList(clientsList, clientsList.size());
     }
