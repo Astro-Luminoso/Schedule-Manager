@@ -4,9 +4,12 @@ import dev.nbcsparta.assignment.schedulemanager.entity.Client;
 
 import java.util.List;
 
-public record ClientsInList(List<Client> clientsList, int total) {
+public record ClientsInList(List<CommonClientDetail> clientsList, int total) {
 
-    public ClientsInList(List<Client> data) {
-        this(data, data.size());
+    public static ClientsInList from(List<Client> data) {
+        List<CommonClientDetail> clientsList = data.stream()
+                .map(CommonClientDetail::from)
+                .toList();
+        return new ClientsInList(clientsList, clientsList.size());
     }
 }

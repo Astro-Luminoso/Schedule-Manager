@@ -4,7 +4,7 @@ import dev.nbcsparta.assignment.schedulemanager.dto.request.PostRegisterRequest;
 import dev.nbcsparta.assignment.schedulemanager.dto.response.SimpleClientResponse;
 import dev.nbcsparta.assignment.schedulemanager.entity.Client;
 import dev.nbcsparta.assignment.schedulemanager.exception.DuplicateUserException;
-import dev.nbcsparta.assignment.schedulemanager.repository.ClientRepository;
+import dev.nbcsparta.assignment.schedulemanager.service.ClientService;
 import dev.nbcsparta.assignment.schedulemanager.service.RegisterService;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -14,29 +14,26 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
 
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 public class RegisterServiceTest {
 
     @Mock
-    private ClientRepository clientRepository;
+    private ClientService clientService;
 
     @InjectMocks
-    private RegisterService registerService;    /* mock jpa meta model - jpa auditing is enabled */
+    private RegisterService registerService;
+
 
     @Test
     public void testRegisterAndSuccess() {
         PostRegisterRequest reqBody = new PostRegisterRequest("testUser", "test.tester@dummy.dev", "qwer1234");
         Client dummyAuthor = reqBody.toUser();
-        when(clientRepository.existsByEmail(reqBody.email())).thenReturn(false);
-        when(clientRepository.save(any(Client.class))).thenReturn(dummyAuthor);
+        when(clientService.saveNewClient(reqBody)).thenReturn(dummyAuthor);
 
         SimpleClientResponse dummyResBody = registerService.executeRegister(reqBody);
 
-        verify(clientRepository).save(any(Client.class));
         Assertions.assertNotNull(dummyResBody);
         Assertions.assertEquals(dummyResBody.userName(), dummyAuthor.getUserName());
         Assertions.assertEquals(dummyResBody.email(), dummyAuthor.getEmail());
@@ -46,7 +43,7 @@ public class RegisterServiceTest {
     public void testRegisterAndDuplicatedEmailFound() {
 
         PostRegisterRequest reqBody = new PostRegisterRequest("testUser", "test.tester@dummy.dev", "qwer1234");
-        when(clientRepository.existsByEmail(reqBody.email())).thenReturn(true);
+        when(clientService.saveNewClient(reqBody)).thenThrow(new DuplicateUserException(HttpStatus.BAD_REQUEST));
 
         DuplicateUserException ex = Assertions.assertThrows(DuplicateUserException.class,
                 () -> registerService.executeRegister(reqBody));

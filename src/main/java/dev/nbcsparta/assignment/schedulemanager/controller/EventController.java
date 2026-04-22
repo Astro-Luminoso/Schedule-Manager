@@ -52,7 +52,7 @@ public class EventController {
     @PatchMapping("/{id}")
     public ResponseEntity<CommonEventResponse> updateEvent(
             @PathVariable Long id,
-            @RequestBody PatchEventRequest reqBody,
+            @Valid @RequestBody PatchEventRequest reqBody,
             @SessionAttribute(name = "LOGIN_USER", required = false) SessionUser sessionUser
     ) {
         if (sessionUser == null) {

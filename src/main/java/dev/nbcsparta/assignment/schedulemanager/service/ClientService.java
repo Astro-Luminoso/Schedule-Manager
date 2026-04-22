@@ -1,15 +1,16 @@
 package dev.nbcsparta.assignment.schedulemanager.service;
 
 import dev.nbcsparta.assignment.schedulemanager.config.PasswordEncoder;
+import dev.nbcsparta.assignment.schedulemanager.dto.request.PostRegisterRequest;
 import dev.nbcsparta.assignment.schedulemanager.dto.request.UpdateClientDetail;
 import dev.nbcsparta.assignment.schedulemanager.dto.response.ClientsInList;
 import dev.nbcsparta.assignment.schedulemanager.dto.response.CommonClientDetail;
 import dev.nbcsparta.assignment.schedulemanager.entity.Client;
 import dev.nbcsparta.assignment.schedulemanager.exception.AuthorNotFoundException;
 import dev.nbcsparta.assignment.schedulemanager.exception.ClientNotAuthorisedException;
+import dev.nbcsparta.assignment.schedulemanager.exception.DuplicateUserException;
 import dev.nbcsparta.assignment.schedulemanager.exception.PasswordNotMatchException;
 import dev.nbcsparta.assignment.schedulemanager.repository.ClientRepository;
-import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -34,17 +35,17 @@ public class ClientService {
 
     @Transactional(readOnly = true)
     public CommonClientDetail retrieveClientById(long id) {
-        return new CommonClientDetail(this.getClient(id));
+        return CommonClientDetail.from(this.getClient(id));
     }
 
     @Transactional(readOnly = true)
     public ClientsInList retrieveAllClients() {
-        return new ClientsInList(clientRepository.findAll());
+        return ClientsInList.from(clientRepository.findAllByIsDeletedFalse());
     }
 
     public CommonClientDetail putClientById(
             long clientId,
-            @Valid UpdateClientDetail reqBody,
+            UpdateClientDetail reqBody,
             long sessionId
     ) {
         Client client = clientRepository.findById(clientId)
@@ -52,12 +53,12 @@ public class ClientService {
         if (clientId != sessionId) {
             throw new ClientNotAuthorisedException(HttpStatus.FORBIDDEN, sessionId, clientId);
         }
-        if (!client.isPasswordMatch(encoder, reqBody.oldPassword())) {
+        if (client.passwordNotMatch(encoder, reqBody.oldPassword())) {
             throw new PasswordNotMatchException(HttpStatus.BAD_REQUEST);
         }
         client.updateClientDetail(reqBody.userName(), reqBody.email());
 
-        return new CommonClientDetail(client);
+        return CommonClientDetail.from(client);
     }
 
     public void deleteClientById(long id, long sessionId) {
@@ -68,6 +69,15 @@ public class ClientService {
         if (id != sessionId) {
             throw new ClientNotAuthorisedException(HttpStatus.FORBIDDEN, sessionId, id);
         }
-        clientRepository.delete(client);
+
+        client.declareDeletedUser();
+    }
+
+    public Client saveNewClient(PostRegisterRequest reqBody) {
+        if (clientRepository.existsByEmail(reqBody.email())) {
+            throw new DuplicateUserException(HttpStatus.BAD_REQUEST);
+        }
+
+        return clientRepository.save(reqBody.toUser());
     }
 }

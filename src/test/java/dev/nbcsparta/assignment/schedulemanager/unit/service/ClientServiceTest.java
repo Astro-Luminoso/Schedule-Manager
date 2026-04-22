@@ -1,12 +1,14 @@
 package dev.nbcsparta.assignment.schedulemanager.unit.service;
 
 import dev.nbcsparta.assignment.schedulemanager.config.PasswordEncoder;
+import dev.nbcsparta.assignment.schedulemanager.dto.request.PostRegisterRequest;
 import dev.nbcsparta.assignment.schedulemanager.dto.request.UpdateClientDetail;
 import dev.nbcsparta.assignment.schedulemanager.dto.response.ClientsInList;
 import dev.nbcsparta.assignment.schedulemanager.dto.response.CommonClientDetail;
 import dev.nbcsparta.assignment.schedulemanager.entity.Client;
 import dev.nbcsparta.assignment.schedulemanager.exception.AuthorNotFoundException;
 import dev.nbcsparta.assignment.schedulemanager.exception.ClientNotAuthorisedException;
+import dev.nbcsparta.assignment.schedulemanager.exception.DuplicateUserException;
 import dev.nbcsparta.assignment.schedulemanager.repository.ClientRepository;
 import dev.nbcsparta.assignment.schedulemanager.service.ClientService;
 import org.junit.jupiter.api.Assertions;
@@ -22,6 +24,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -39,12 +42,16 @@ public class ClientServiceTest {
 
     @Test
     public void testRetrieveAllClientsAndSuccess() {
-        List<Client> dummyClients = List.of(
+        List<Client> dummys = List.of(
                 new Client("Test User1", "jane.doe@dummy.dev", "qwer1234"),
                 new Client("Test User2", "john.doe@dummy.dev", "asdf1234")
         );
+        List<Client>dummyClients = dummys.stream().peek(client -> {
+            ReflectionTestUtils.setField(client, "id", (long) (dummys.indexOf(client) + 1));
+            ReflectionTestUtils.setField(client, "updatedDate", LocalDateTime.now());
+        }).toList();
 
-        when(clientRepository.findAll()).thenReturn(dummyClients);
+        when(clientRepository.findAllByIsDeletedFalse()).thenReturn(dummyClients);
 
         ClientsInList result = clientService.retrieveAllClients();
 
@@ -133,12 +140,13 @@ public class ClientServiceTest {
     public void testDeleteClientByIdAndSuccess() {
         long clientId = 1L;
         Client dummyClient = new Client("Test User", "jane.doe@dummy.dev", "qwer1234");
+        ReflectionTestUtils.setField(dummyClient, "id", clientId);
 
         when(clientRepository.findById(clientId)).thenReturn(Optional.of(dummyClient));
 
         clientService.deleteClientById(clientId, clientId);
-
-        verify(clientRepository).delete(dummyClient);
+        Assertions.assertEquals("Deleted_User_1", dummyClient.getUserName());
+        Assertions.assertNull(dummyClient.getEmail());
     }
 
     @Test
@@ -171,5 +179,31 @@ public class ClientServiceTest {
         );
 
         Assertions.assertEquals(HttpStatus.NOT_FOUND, ex.getStatus());
+    }
+
+    @Test
+    public void testRegisterAndSuccess() {
+        PostRegisterRequest reqBody = new PostRegisterRequest("testUser", "test.tester@dummy.dev", "qwer1234");
+        Client dummyAuthor = reqBody.toUser();
+        when(clientRepository.existsByEmail(reqBody.email())).thenReturn(false);
+        when(clientRepository.save(any(Client.class))).thenReturn(dummyAuthor);
+
+        Client dummyClient = clientService.saveNewClient(reqBody);
+
+        verify(clientRepository).save(any(Client.class));
+        Assertions.assertNotNull(dummyClient);
+        Assertions.assertEquals(dummyAuthor.getUserName(), dummyClient.getUserName());
+        Assertions.assertEquals(dummyClient.getEmail(), dummyAuthor.getEmail());
+    }
+
+    @Test
+    public void testRegisterAndDuplicatedEmailFound() {
+
+        PostRegisterRequest reqBody = new PostRegisterRequest("testUser", "test.tester@dummy.dev", "qwer1234");
+        when(clientRepository.existsByEmail(reqBody.email())).thenReturn(true);
+
+        DuplicateUserException ex = Assertions.assertThrows(DuplicateUserException.class,
+                () -> clientService.saveNewClient(reqBody));
+        Assertions.assertEquals(HttpStatus.BAD_REQUEST, ex.getStatus());
     }
 }

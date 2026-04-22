@@ -6,6 +6,7 @@ import dev.nbcsparta.assignment.schedulemanager.dto.response.ClientsInList;
 import dev.nbcsparta.assignment.schedulemanager.dto.response.CommonClientDetail;
 import dev.nbcsparta.assignment.schedulemanager.exception.ClientNotAuthorisedException;
 import dev.nbcsparta.assignment.schedulemanager.service.ClientService;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -36,7 +37,7 @@ public class ClientController {
     @PutMapping("/{id}")
     public ResponseEntity<CommonClientDetail> updateClientById(
             @PathVariable Long id,
-            @RequestBody UpdateClientDetail reqBody,
+            @Valid @RequestBody UpdateClientDetail reqBody,
             @SessionAttribute(name = "LOGIN_USER") SessionUser sessionUser
             ){
         if (sessionUser == null) {
@@ -55,6 +56,6 @@ public class ClientController {
             throw new ClientNotAuthorisedException(HttpStatus.UNAUTHORIZED);
         }
         clientService.deleteClientById(id, sessionUser.id());
-        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+        return ResponseEntity.status(HttpStatus.OK).build();
     }
 }

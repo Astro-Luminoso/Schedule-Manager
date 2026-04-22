@@ -9,7 +9,6 @@ import dev.nbcsparta.assignment.schedulemanager.entity.Event;
 import dev.nbcsparta.assignment.schedulemanager.exception.ClientNotAuthorisedException;
 import dev.nbcsparta.assignment.schedulemanager.exception.EventNotFoundException;
 import dev.nbcsparta.assignment.schedulemanager.repository.EventRepository;
-import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -53,7 +52,7 @@ public class EventService {
 
     public CommonEventResponse updateEvent(
             Long id,
-            @Valid PatchEventRequest reqBody,
+            PatchEventRequest reqBody,
             Long sessionUserId
     ) {
         Event event = eventRepository.findById(id)
