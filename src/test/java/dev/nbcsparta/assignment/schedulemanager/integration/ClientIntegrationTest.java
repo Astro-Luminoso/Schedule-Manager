@@ -6,7 +6,6 @@ import dev.nbcsparta.assignment.schedulemanager.dto.request.UpdateClientDetail;
 import dev.nbcsparta.assignment.schedulemanager.dto.response.ClientsInList;
 import dev.nbcsparta.assignment.schedulemanager.dto.response.CommonClientDetail;
 import dev.nbcsparta.assignment.schedulemanager.entity.Client;
-import dev.nbcsparta.assignment.schedulemanager.exception.PasswordNotMatchException;
 import dev.nbcsparta.assignment.schedulemanager.repository.ClientRepository;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -21,6 +20,7 @@ import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.transaction.annotation.Transactional;
 import tools.jackson.databind.ObjectMapper;
 
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -132,12 +132,11 @@ public class ClientIntegrationTest {
         UpdateClientDetail reqBody = new UpdateClientDetail("New Name", "new@dummy.dev", "qwer1234");
         MockHttpSession session = createSession(target.getId(), target.getEmail());
 
-        MvcResult mvcResult = mockMvc.perform(put("/users/{id}", target.getId())
+        mockMvc.perform(put("/users/{id}", target.getId())
                         .session(session)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(reqBody)))
-                .andExpect(status().isBadRequest())
-                .andReturn();
+                .andExpect(status().isBadRequest());
     }
 
     @Test
@@ -152,6 +151,47 @@ public class ClientIntegrationTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(reqBody)))
                 .andExpect(status().isForbidden());
+    }
+
+    @Test
+    public void test_delete_Client_by_Id_and_Success() throws Exception {
+        Client target = clientRepository.save(new Client("To Delete", "delete@dummy.dev", "qwer1234"));
+        MockHttpSession session = createSession(target.getId(), target.getEmail());
+
+        mockMvc.perform(delete("/users/{id}", target.getId())
+                        .session(session))
+                .andExpect(status().isNoContent());
+
+        Assertions.assertTrue(clientRepository.findById(target.getId()).isEmpty());
+    }
+
+    @Test
+    public void test_delete_Client_by_Id_without_session_returns_BAD_REQUEST() throws Exception {
+        Client target = clientRepository.save(new Client("To Delete", "delete.no.session@dummy.dev", "qwer1234"));
+
+        mockMvc.perform(delete("/users/{id}", target.getId()))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    public void test_delete_Client_by_Id_with_different_sessionUser_returns_FORBIDDEN() throws Exception {
+        Client target = clientRepository.save(new Client("Target", "target@dummy.dev", "qwer1234"));
+        Client another = clientRepository.save(new Client("Another", "another.delete@dummy.dev", "qwer1234"));
+        MockHttpSession session = createSession(another.getId(), another.getEmail());
+
+        mockMvc.perform(delete("/users/{id}", target.getId())
+                        .session(session))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    public void test_delete_Client_by_Invalid_Id_returns_NOT_FOUND() throws Exception {
+        Client loginClient = clientRepository.save(new Client("Login User", "login.delete@dummy.dev", encoder.encode("qwer1234")));
+        MockHttpSession session = createSession(loginClient.getId(), loginClient.getEmail());
+
+        mockMvc.perform(delete("/users/{id}", 999999L)
+                        .session(session))
+                .andExpect(status().isNotFound());
     }
 
     private MockHttpSession createSession(Long id, String email) {

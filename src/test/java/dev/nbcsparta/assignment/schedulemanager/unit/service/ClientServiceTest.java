@@ -22,6 +22,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -100,6 +101,10 @@ public class ClientServiceTest {
         long clientId = 1L;
         long anotherSessionId = 2L;
         UpdateClientDetail reqBody = new UpdateClientDetail("New Name", "new@dummy.dev", "q1w2e3r4");
+        Client client = new Client("New Name2", "new2@dummy.dev", "q1w2e3r4");
+        ReflectionTestUtils.setField(client, "id", 2L);
+
+        when(clientRepository.findById(1L)).thenReturn(Optional.of(client));
 
         ClientNotAuthorisedException ex = Assertions.assertThrows(
                 ClientNotAuthorisedException.class,
@@ -119,6 +124,50 @@ public class ClientServiceTest {
         AuthorNotFoundException ex = Assertions.assertThrows(
                 AuthorNotFoundException.class,
                 () -> clientService.putClientById(clientId, reqBody, clientId)
+        );
+
+        Assertions.assertEquals(HttpStatus.NOT_FOUND, ex.getStatus());
+    }
+
+    @Test
+    public void testDeleteClientByIdAndSuccess() {
+        long clientId = 1L;
+        Client dummyClient = new Client("Test User", "jane.doe@dummy.dev", "qwer1234");
+
+        when(clientRepository.findById(clientId)).thenReturn(Optional.of(dummyClient));
+
+        clientService.deleteClientById(clientId, clientId);
+
+        verify(clientRepository).delete(dummyClient);
+    }
+
+    @Test
+    public void testDeleteClientByIdAndForbidden() {
+        long clientId = 1L;
+        long anotherSessionId = 2L;
+
+        Client client = new Client("New Name2", "new2@dummy.dev", "q1w2e3r4");
+        ReflectionTestUtils.setField(client, "id", 2L);
+
+        when(clientRepository.findById(1L)).thenReturn(Optional.of(client));
+
+        ClientNotAuthorisedException ex = Assertions.assertThrows(
+                ClientNotAuthorisedException.class,
+                () -> clientService.deleteClientById(clientId, anotherSessionId)
+        );
+
+        Assertions.assertEquals(HttpStatus.FORBIDDEN, ex.getStatus());
+    }
+
+    @Test
+    public void testDeleteClientByIdAndNotFound() {
+        long clientId = 1L;
+
+        when(clientRepository.findById(clientId)).thenReturn(Optional.empty());
+
+        AuthorNotFoundException ex = Assertions.assertThrows(
+                AuthorNotFoundException.class,
+                () -> clientService.deleteClientById(clientId, clientId)
         );
 
         Assertions.assertEquals(HttpStatus.NOT_FOUND, ex.getStatus());
