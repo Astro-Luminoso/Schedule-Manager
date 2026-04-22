@@ -9,7 +9,6 @@ import dev.nbcsparta.assignment.schedulemanager.exception.AuthorNotFoundExceptio
 import dev.nbcsparta.assignment.schedulemanager.exception.ClientNotAuthorisedException;
 import dev.nbcsparta.assignment.schedulemanager.exception.PasswordNotMatchException;
 import dev.nbcsparta.assignment.schedulemanager.repository.ClientRepository;
-import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -44,7 +43,7 @@ public class ClientService {
 
     public CommonClientDetail putClientById(
             long clientId,
-            @Valid UpdateClientDetail reqBody,
+            UpdateClientDetail reqBody,
             long sessionId
     ) {
         Client client = clientRepository.findById(clientId)
