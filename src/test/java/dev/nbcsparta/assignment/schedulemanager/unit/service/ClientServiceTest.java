@@ -39,10 +39,14 @@ public class ClientServiceTest {
 
     @Test
     public void testRetrieveAllClientsAndSuccess() {
-        List<Client> dummyClients = List.of(
+        List<Client> dummys = List.of(
                 new Client("Test User1", "jane.doe@dummy.dev", "qwer1234"),
                 new Client("Test User2", "john.doe@dummy.dev", "asdf1234")
         );
+        List<Client>dummyClients = dummys.stream().peek(client -> {
+            ReflectionTestUtils.setField(client, "id", (long) (dummys.indexOf(client) + 1));
+            ReflectionTestUtils.setField(client, "updatedDate", LocalDateTime.now());
+        }).toList();
 
         when(clientRepository.findAll()).thenReturn(dummyClients);
 
