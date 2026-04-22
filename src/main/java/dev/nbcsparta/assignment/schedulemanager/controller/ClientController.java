@@ -56,6 +56,6 @@ public class ClientController {
             throw new ClientNotAuthorisedException(HttpStatus.UNAUTHORIZED);
         }
         clientService.deleteClientById(id, sessionUser.id());
-        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+        return ResponseEntity.status(HttpStatus.OK).build();
     }
 }

@@ -22,7 +22,6 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
-import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -137,12 +136,13 @@ public class ClientServiceTest {
     public void testDeleteClientByIdAndSuccess() {
         long clientId = 1L;
         Client dummyClient = new Client("Test User", "jane.doe@dummy.dev", "qwer1234");
+        ReflectionTestUtils.setField(dummyClient, "id", clientId);
 
         when(clientRepository.findById(clientId)).thenReturn(Optional.of(dummyClient));
 
         clientService.deleteClientById(clientId, clientId);
-
-        verify(clientRepository).delete(dummyClient);
+        Assertions.assertEquals("Deleted_User_1", dummyClient.getUserName());
+        Assertions.assertNull(dummyClient.getEmail());
     }
 
     @Test

@@ -19,24 +19,31 @@ public class Client {
     @Column(nullable = false)
     private String userName;
 
-    @Column(nullable = false)
+    @Column(unique = true)
     private String email;
 
-    @Column(nullable = false)
     private String password;
 
     @Column(nullable = false)
     @LastModifiedDate
     private LocalDateTime updatedDate;
 
+    @Column(nullable = false)
+    private boolean isDeleted;
+
     // JPA Empty constructor
     protected Client() {
     }
 
-    public Client(String userName, String email, String password) {
+    public Client(String userName, String email, String password, boolean isDeleted) {
         this.userName = userName;
         this.email = email;
         this.password = password;
+        this.isDeleted = isDeleted;
+    }
+
+    public Client(String userName, String email, String password) {
+        this(userName, email, password, false);
     }
 
     public Long getId() {
@@ -55,8 +62,15 @@ public class Client {
         return this.updatedDate.format(DateTimeFormatter.BASIC_ISO_DATE);
     }
 
-    public boolean isPasswordMatch(PasswordEncoder encoder, String rawPassword) {
-        return encoder.matches(rawPassword, this.password);
+    public boolean passwordNotMatch(PasswordEncoder encoder, String rawPassword) {
+        return !encoder.matches(rawPassword, this.password);
+    }
+
+    public void declareDeletedUser() {
+        this.userName = "Deleted_User_" + this.id;
+        this.email = null;
+        this.password = null;
+        this.isDeleted = true;
     }
 
     public void updateClientDetail(String userName, String email) {

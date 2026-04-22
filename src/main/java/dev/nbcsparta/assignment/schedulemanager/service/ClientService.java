@@ -51,7 +51,7 @@ public class ClientService {
         if (clientId != sessionId) {
             throw new ClientNotAuthorisedException(HttpStatus.FORBIDDEN, sessionId, clientId);
         }
-        if (!client.isPasswordMatch(encoder, reqBody.oldPassword())) {
+        if (client.passwordNotMatch(encoder, reqBody.oldPassword())) {
             throw new PasswordNotMatchException(HttpStatus.BAD_REQUEST);
         }
         client.updateClientDetail(reqBody.userName(), reqBody.email());
@@ -67,6 +67,7 @@ public class ClientService {
         if (id != sessionId) {
             throw new ClientNotAuthorisedException(HttpStatus.FORBIDDEN, sessionId, id);
         }
-        clientRepository.delete(client);
+
+        client.declareDeletedUser();
     }
 }

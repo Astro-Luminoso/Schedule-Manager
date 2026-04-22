@@ -160,9 +160,10 @@ public class ClientIntegrationTest {
 
         mockMvc.perform(delete("/users/{id}", target.getId())
                         .session(session))
-                .andExpect(status().isNoContent());
+                .andExpect(status().isOk());
 
-        Assertions.assertTrue(clientRepository.findById(target.getId()).isEmpty());
+        Assertions.assertEquals("Deleted_User_" + target.getId(), target.getUserName());
+        Assertions.assertNull(target.getEmail());
     }
 
     @Test

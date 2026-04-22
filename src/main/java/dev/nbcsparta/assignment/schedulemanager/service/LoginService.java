@@ -24,7 +24,7 @@ public class LoginService {
     public SessionUser executeLogin(PostLoginRequest reqBody) {
         Client user = clientRepository.findByEmail(reqBody.email())
                 .orElseThrow(() -> new AuthorNotFoundException(HttpStatus.UNAUTHORIZED));
-        if(!user.isPasswordMatch(encoder, reqBody.password())) {
+        if(user.passwordNotMatch(encoder, reqBody.password())) {
             throw new PasswordNotMatchException(HttpStatus.UNAUTHORIZED);
         }
 
