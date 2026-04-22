@@ -12,28 +12,93 @@ API의 요구사항에 맞게 동작하게 구현하고, API 명세에 맞게 �
 - Spring Boot 4.0.5
 - Spring Data JPA
 - MySQL & MySQL Driver
+- H2 Database (테스트용 인메모리 DB)
 - Validation
 - gradle
 
 
-## 프로젝트 구조
+### 구조
 
-- TBD
-
-### 구조 요약
-
-- TBD
+```text
+src
+├── main
+│   ├── java
+│   │   └── dev
+│   │       └── nbcsparta
+│   │           └── assignment
+│   │               └── schedulemanager
+│   │                   ├── ScheduleManagerApplication.java
+│   │                   ├── advisor
+│   │                   │   └── GlobalExceptionHandler.java
+│   │                   ├── config
+│   │                   │   ├── JpaConfig.java
+│   │                   │   └── PasswordEncoder.java
+│   │                   ├── controller
+│   │                   │   ├── ClientController.java
+│   │                   │   ├── EventController.java
+│   │                   │   ├── LoginController.java
+│   │                   │   └── RegisterController.java
+│   │                   ├── dto
+│   │                   │   ├── SessionUser.java
+│   │                   │   ├── request
+│   │                   │   │   ├── PatchEventRequest.java
+│   │                   │   │   ├── PostEventRequest.java
+│   │                   │   │   ├── PostLoginRequest.java
+│   │                   │   │   ├── PostRegisterRequest.java
+│   │                   │   │   └── UpdateClientDetail.java
+│   │                   │   └── response
+│   │                   │       ├── ClientsInList.java
+│   │                   │       ├── CommonClientDetail.java
+│   │                   │       ├── CommonEventResponse.java
+│   │                   │       ├── EventListResponse.java
+│   │                   │       └── SimpleClientResponse.java
+│   │                   ├── entity
+│   │                   │   ├── Client.java
+│   │                   │   └── Event.java
+│   │                   ├── exception
+│   │                   │   ├── AuthorNotFoundException.java
+│   │                   │   ├── ClientNotAuthorisedException.java
+│   │                   │   ├── DuplicateUserException.java
+│   │                   │   ├── EventNotFoundException.java
+│   │                   │   └── PasswordNotMatchException.java
+│   │                   ├── repository
+│   │                   │   ├── ClientRepository.java
+│   │                   │   └── EventRepository.java
+│   │                   └── service
+│   │                       ├── ClientService.java
+│   │                       ├── EventService.java
+│   │                       ├── LoginService.java
+│   │                       └── RegisterService.java
+│   └── resources
+│       └── application.properties
+└── test
+    ├── java
+    │   └── dev
+    │       └── nbcsparta
+    │           └── assignment
+    │               └── schedulemanager
+    │                   ├── integration
+    │                   │   ├── AuthenticationIntegrationTest.java
+    │                   │   ├── ClientIntegrationTest.java
+    │                   │   ├── EventCrudIntegrationTest.java
+    │                   │   └── RegisterIntegrationTest.java
+    │                   └── unit
+    │                       ├── controller
+    │                       │   ├── EventControllerTest.java
+    │                       │   ├── LoginControllerTest.java
+    │                       │   └── RegisterControllerTest.java
+    │                       └── service
+    │                           ├── ClientServiceTest.java
+    │                           ├── EventServiceTest.java
+    │                           ├── LoginServiceTest.java
+    │                           └── RegisterServiceTest.java
+    └── resources
+        └── application.properties
+```
 
 ## API 명세
 
-### `/events`
-[GET: /events](https://github.com/Astro-Luminoso/Daily-Management/wiki/GET:--events)
-
-[POST: /events](https://github.com/Astro-Luminoso/Daily-Management/wiki/POST:--events)
-
-[PATCH: /events/{:id}](https://github.com/Astro-Luminoso/Daily-Management/wiki/PATCH:--events-%7B:id%7D)
-
-[DELETE: /events/{:id}](https://github.com/Astro-Luminoso/Daily-Management/wiki/DELETE:--events-%7B:id%7D)
+[API 명세 링크](https://github.com/Astro-Luminoso/Schedule-Manager/wiki/Schedule%E2%80%90Manager-API-DOCUMENTATION)
 
 ## ERD
 
