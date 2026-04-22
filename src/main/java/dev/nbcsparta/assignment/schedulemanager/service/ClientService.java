@@ -39,7 +39,7 @@ public class ClientService {
 
     @Transactional(readOnly = true)
     public ClientsInList retrieveAllClients() {
-        return new ClientsInList(clientRepository.findAll());
+        return ClientsInList.from(clientRepository.findAll());
     }
 
     public CommonClientDetail putClientById(
