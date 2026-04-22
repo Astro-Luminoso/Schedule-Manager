@@ -5,6 +5,7 @@ import dev.nbcsparta.assignment.schedulemanager.dto.request.PatchEventRequest;
 import dev.nbcsparta.assignment.schedulemanager.dto.request.PostEventRequest;
 import dev.nbcsparta.assignment.schedulemanager.dto.response.CommonEventResponse;
 import dev.nbcsparta.assignment.schedulemanager.dto.response.EventListResponse;
+import dev.nbcsparta.assignment.schedulemanager.exception.ClientNotAuthorisedException;
 import dev.nbcsparta.assignment.schedulemanager.service.EventService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
@@ -27,7 +28,7 @@ public class EventController {
             @SessionAttribute(name = "LOGIN_USER", required = false) SessionUser sessionUser
     ) {
         if (sessionUser == null) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+            throw new ClientNotAuthorisedException(HttpStatus.UNAUTHORIZED);
         }
         CommonEventResponse resBody = eventService.createEvent(reqBody, sessionUser.id());
         return ResponseEntity.status(HttpStatus.CREATED).body(resBody);
@@ -55,7 +56,7 @@ public class EventController {
             @SessionAttribute(name = "LOGIN_USER", required = false) SessionUser sessionUser
     ) {
         if (sessionUser == null) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+            throw new ClientNotAuthorisedException(HttpStatus.UNAUTHORIZED);
         }
         CommonEventResponse resBody = eventService.updateEvent(id, reqBody, sessionUser.id());
         return ResponseEntity.status(HttpStatus.OK).body(resBody);
@@ -67,7 +68,7 @@ public class EventController {
             @SessionAttribute(name = "LOGIN_USER", required = false) SessionUser sessionUser
     ) {
         if (sessionUser == null) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+            throw new ClientNotAuthorisedException(HttpStatus.UNAUTHORIZED);
         }
         eventService.deleteEvent(id, sessionUser.id());
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();

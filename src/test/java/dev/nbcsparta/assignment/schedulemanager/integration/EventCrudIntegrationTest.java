@@ -177,6 +177,17 @@ public class EventCrudIntegrationTest {
     }
 
     @Test
+    public void updateEvent_And_Unauthorized_Without_Session() throws Exception {
+        Event existingEvent = eventRepository.save(new Event("Old Title", "Old Description", loginUser));
+        PatchEventRequest reqBody = new PatchEventRequest("Updated Title", "Updated Description");
+
+        mockMvc.perform(patch("/events/{id}", existingEvent.getId())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(reqBody)))
+                .andExpect(status().isUnauthorized());
+    }
+
+    @Test
     public void deleteEvent_And_Success() throws Exception {
         Event existingEvent = eventRepository.save(new Event("To Delete", "Delete me", loginUser));
         MockHttpSession session = loginAndGetSession(loginUser.getEmail(), "q1w2e3r4");
@@ -186,6 +197,14 @@ public class EventCrudIntegrationTest {
                 .andExpect(status().isNoContent());
 
         Assertions.assertTrue(eventRepository.findById(existingEvent.getId()).isEmpty());
+    }
+
+    @Test
+    public void deleteEvent_And_Unauthorized_Without_Session() throws Exception {
+        Event existingEvent = eventRepository.save(new Event("To Delete", "Delete me", loginUser));
+
+        mockMvc.perform(delete("/events/{id}", existingEvent.getId()))
+                .andExpect(status().isUnauthorized());
     }
 
     @Test

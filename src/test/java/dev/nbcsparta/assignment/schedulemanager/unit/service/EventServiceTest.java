@@ -44,7 +44,7 @@ public class EventServiceTest {
         Client dummyClient = new Client("Test User", "john.doe@dummy.dev", "qwer1234");
         PostEventRequest request = new PostEventRequest("Test Event", "This is a test event.");
 
-        when(clientService.retrieveClientById(dummyClientId))
+        when(clientService.getClient(dummyClientId))
                 .thenReturn(dummyClient);
         when(eventRepository.save(any(Event.class)))
                 .thenAnswer(invocation -> {
