@@ -1,0 +1,12 @@
+package dev.nbcsparta.assignment.schedulemanager.dto.request;
+
+import dev.nbcsparta.assignment.schedulemanager.entity.Client;
+import dev.nbcsparta.assignment.schedulemanager.entity.Comment;
+import dev.nbcsparta.assignment.schedulemanager.entity.Event;
+
+public record PostNewComment(String content, Long eventId, Long ClientId) {
+
+    public Comment toEntity(Event event, Client client) {
+        return new Comment(content, event, client);
+    }
+}

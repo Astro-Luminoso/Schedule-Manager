@@ -29,11 +29,18 @@ public class EventService {
 
     public CommonEventResponse createEvent(PostEventRequest reqBody, long clientId) {
         Client author = clientService.getClient(clientId);
-        Event event =  new Event(reqBody.title(), reqBody.description(), author);
+        Event event = new Event(reqBody.title(), reqBody.description(), author);
         Event newEvent = eventRepository.save(event);
 
         return CommonEventResponse.from(newEvent);
     }
+
+
+    public Event getEvent(long id) {
+        return eventRepository.findById(id)
+                .orElseThrow(() -> new EventNotFoundException(HttpStatus.NOT_FOUND, id));
+    }
+
 
     @Transactional(readOnly = true)
     public EventListResponse getEvents(Long authorId) {
@@ -44,10 +51,7 @@ public class EventService {
 
     @Transactional(readOnly = true)
     public CommonEventResponse getEventById(Long id) {
-        Event event = eventRepository.findById(id)
-                .orElseThrow(() -> new EventNotFoundException(HttpStatus.NOT_FOUND, id));
-
-        return CommonEventResponse.from(event);
+        return CommonEventResponse.from(this.getEvent(id));
     }
 
     public CommonEventResponse updateEvent(
@@ -55,8 +59,7 @@ public class EventService {
             PatchEventRequest reqBody,
             Long sessionUserId
     ) {
-        Event event = eventRepository.findById(id)
-                .orElseThrow(() -> new EventNotFoundException(HttpStatus.NOT_FOUND, id));
+        Event event = this.getEvent(id);
 
         if (!event.getAuthor().getId().equals(sessionUserId)) {
             throw new ClientNotAuthorisedException(HttpStatus.FORBIDDEN, sessionUserId, event.getAuthor().getId());
@@ -67,8 +70,7 @@ public class EventService {
     }
 
     public void deleteEvent(Long id, Long sessionUserId) {
-        Event event = eventRepository.findById(id)
-                .orElseThrow(() -> new EventNotFoundException(HttpStatus.NOT_FOUND, id));
+        Event event = this.getEvent(id);
 
         long authorId = event.getAuthor().getId();
         if (authorId != sessionUserId) {
