@@ -34,7 +34,7 @@ public class ClientService {
 
     @Transactional(readOnly = true)
     public CommonClientDetail retrieveClientById(long id) {
-        return new CommonClientDetail(this.getClient(id));
+        return CommonClientDetail.from(this.getClient(id));
     }
 
     @Transactional(readOnly = true)
@@ -57,7 +57,7 @@ public class ClientService {
         }
         client.updateClientDetail(reqBody.userName(), reqBody.email());
 
-        return new CommonClientDetail(client);
+        return CommonClientDetail.from(client);
     }
 
     public void deleteClientById(long id, long sessionId) {
