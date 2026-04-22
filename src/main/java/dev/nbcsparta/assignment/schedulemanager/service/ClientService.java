@@ -1,12 +1,14 @@
 package dev.nbcsparta.assignment.schedulemanager.service;
 
 import dev.nbcsparta.assignment.schedulemanager.config.PasswordEncoder;
+import dev.nbcsparta.assignment.schedulemanager.dto.request.PostRegisterRequest;
 import dev.nbcsparta.assignment.schedulemanager.dto.request.UpdateClientDetail;
 import dev.nbcsparta.assignment.schedulemanager.dto.response.ClientsInList;
 import dev.nbcsparta.assignment.schedulemanager.dto.response.CommonClientDetail;
 import dev.nbcsparta.assignment.schedulemanager.entity.Client;
 import dev.nbcsparta.assignment.schedulemanager.exception.AuthorNotFoundException;
 import dev.nbcsparta.assignment.schedulemanager.exception.ClientNotAuthorisedException;
+import dev.nbcsparta.assignment.schedulemanager.exception.DuplicateUserException;
 import dev.nbcsparta.assignment.schedulemanager.exception.PasswordNotMatchException;
 import dev.nbcsparta.assignment.schedulemanager.repository.ClientRepository;
 import org.springframework.http.HttpStatus;
@@ -38,7 +40,7 @@ public class ClientService {
 
     @Transactional(readOnly = true)
     public ClientsInList retrieveAllClients() {
-        return ClientsInList.from(clientRepository.findAll());
+        return ClientsInList.from(clientRepository.findAllByIsDeletedFalse());
     }
 
     public CommonClientDetail putClientById(
@@ -69,5 +71,12 @@ public class ClientService {
         }
 
         client.declareDeletedUser();
+    }
+
+    public Client saveNewClient(PostRegisterRequest reqBody) {
+        if (clientRepository.existsByEmail(reqBody.email())) {
+            throw new DuplicateUserException(HttpStatus.BAD_REQUEST);
+        }
+        return reqBody.toUser();
     }
 }
