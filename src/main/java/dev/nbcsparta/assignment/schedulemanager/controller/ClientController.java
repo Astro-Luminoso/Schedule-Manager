@@ -45,4 +45,16 @@ public class ClientController {
         CommonClientDetail resBody = clientService.putClientById(id, reqBody, sessionUser.id());
         return ResponseEntity.status(HttpStatus.OK).body(resBody);
     }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteClientById(
+            @PathVariable Long id,
+            @SessionAttribute(name = "LOGIN_USER") SessionUser sessionUser
+    ) {
+        if (sessionUser == null) {
+            throw new ClientNotAuthorisedException(HttpStatus.UNAUTHORIZED);
+        }
+        clientService.deleteClientById(id, sessionUser.id());
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+    }
 }

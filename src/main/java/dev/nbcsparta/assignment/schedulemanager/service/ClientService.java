@@ -47,16 +47,27 @@ public class ClientService {
             @Valid UpdateClientDetail reqBody,
             long sessionId
     ) {
+        Client client = clientRepository.findById(clientId)
+                .orElseThrow(() -> new AuthorNotFoundException(HttpStatus.NOT_FOUND));
         if (clientId != sessionId) {
             throw new ClientNotAuthorisedException(HttpStatus.FORBIDDEN, sessionId, clientId);
         }
-        Client client = clientRepository.findById(clientId)
-                .orElseThrow(() -> new AuthorNotFoundException(HttpStatus.NOT_FOUND));
         if (!client.isPasswordMatch(encoder, reqBody.oldPassword())) {
             throw new PasswordNotMatchException(HttpStatus.BAD_REQUEST);
         }
         client.updateClientDetail(reqBody.userName(), reqBody.email());
 
         return new CommonClientDetail(client);
+    }
+
+    public void deleteClientById(long id, long sessionId) {
+
+        Client client = clientRepository.findById(id)
+                .orElseThrow(() -> new AuthorNotFoundException(HttpStatus.NOT_FOUND));
+
+        if (id != sessionId) {
+            throw new ClientNotAuthorisedException(HttpStatus.FORBIDDEN, sessionId, id);
+        }
+        clientRepository.delete(client);
     }
 }
