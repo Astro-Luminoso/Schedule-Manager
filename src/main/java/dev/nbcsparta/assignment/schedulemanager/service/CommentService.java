@@ -1,7 +1,7 @@
 package dev.nbcsparta.assignment.schedulemanager.service;
 
 import dev.nbcsparta.assignment.schedulemanager.dto.request.PostNewComment;
-import dev.nbcsparta.assignment.schedulemanager.dto.response.CommonCommentDetail;
+import dev.nbcsparta.assignment.schedulemanager.dto.response.CommentDetail;
 import dev.nbcsparta.assignment.schedulemanager.entity.Client;
 import dev.nbcsparta.assignment.schedulemanager.entity.Comment;
 import dev.nbcsparta.assignment.schedulemanager.entity.Event;
@@ -29,16 +29,16 @@ public class CommentService {
         this.eventService = eventService;
     }
 
-    public CommonCommentDetail createComment(PostNewComment reqBody, long sessionId) {
-        if(reqBody.ClientId() != sessionId) {
-            throw new ClientNotAuthorisedException(HttpStatus.FORBIDDEN, sessionId, reqBody.ClientId());
+    public CommentDetail createComment(PostNewComment reqBody, long sessionId) {
+        Event event = eventService.getEvent(reqBody.eventId());
+        if(event.getAuthor().getId() != sessionId) {
+            throw new ClientNotAuthorisedException(HttpStatus.FORBIDDEN, sessionId, event.getAuthor().getId());
         }
 
-        Client author = clientService.getClient(reqBody.ClientId());
-        Event event = eventService.getEvent(reqBody.eventId());
+        Client author = clientService.getClient(sessionId);
 
         Comment comment = reqBody.toEntity(event, author);
         comment = commentRepository.save(comment);
-        return CommonCommentDetail.from(comment);
+        return CommentDetail.from(comment);
     }
 }

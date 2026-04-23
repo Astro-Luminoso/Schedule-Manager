@@ -36,6 +36,10 @@ public class Comment {
         this.author = author;
     }
 
+    public long getId() {
+        return this.id;
+    }
+
     public String getContent() {
         return this.content;
     }

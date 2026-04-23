@@ -1,7 +1,8 @@
 package dev.nbcsparta.assignment.schedulemanager.unit.service;
 
 import dev.nbcsparta.assignment.schedulemanager.dto.request.PostNewComment;
-import dev.nbcsparta.assignment.schedulemanager.dto.response.CommonCommentDetail;
+import dev.nbcsparta.assignment.schedulemanager.dto.response.CommentDetail;
+import dev.nbcsparta.assignment.schedulemanager.dto.response.SimpleClientResponse;
 import dev.nbcsparta.assignment.schedulemanager.entity.Client;
 import dev.nbcsparta.assignment.schedulemanager.entity.Comment;
 import dev.nbcsparta.assignment.schedulemanager.entity.Event;
@@ -45,7 +46,7 @@ public class CommentServiceTest {
     public void test_Add_New_Comment_Success() {
         long clientId = 1L;
         long eventId = 1L;
-        PostNewComment reqBody = new PostNewComment("This is an awesome comments!!", eventId, clientId);
+        PostNewComment reqBody = new PostNewComment("This is an awesome comments!!", eventId);
         Client author = new Client("Test User", "user@test.com", "qwer1234");
         ReflectionTestUtils.setField(author, "id", clientId);
         Event event = new Event("Test Event", "This is a test event.", author);
@@ -53,13 +54,15 @@ public class CommentServiceTest {
 
         when(clientService.getClient(clientId)).thenReturn(author);
         when(eventService.getEvent(eventId)).thenReturn(event);
-        when(commentRepository.save(any(Comment.class))).thenAnswer(invocation -> invocation.getArgument(0));
-        CommonCommentDetail resBody = commentService.createComment(reqBody, clientId);
+        Comment savedComment = new Comment(reqBody.content(), event, author);
+        ReflectionTestUtils.setField(savedComment, "id", 1L);
+        when(commentRepository.save(any(Comment.class))).thenReturn(savedComment);
+
+        CommentDetail resBody = commentService.createComment(reqBody, clientId);
 
         Assertions.assertNotNull(resBody);
         Assertions.assertEquals(reqBody.content(), resBody.content());
-        Assertions.assertEquals(reqBody.eventId(), resBody.eventId());
-        Assertions.assertEquals(reqBody.ClientId(), resBody.authorId());
+        Assertions.assertEquals(SimpleClientResponse.class, resBody.client().getClass());
 
         verify(commentRepository).save(any(Comment.class));
     }
@@ -67,9 +70,13 @@ public class CommentServiceTest {
     @Test
     public void test_Add_New_Comment_Forbidden_When_Session_User_Does_Not_Match_Author() {
         long sessionId = 1L;
-        long targetAuthorId = 2L;
         long eventId = 99L;
-        PostNewComment reqBody = new PostNewComment("content", eventId, targetAuthorId);
+        PostNewComment reqBody = new PostNewComment("content", eventId);
+        Client eventAuthor = new Client("Another User", "other@test.com", "qwer1234");
+        ReflectionTestUtils.setField(eventAuthor, "id", 2L);
+        Event event = new Event("Test Event", "This is a test event.", eventAuthor);
+
+        when(eventService.getEvent(eventId)).thenReturn(event);
 
         ClientNotAuthorisedException ex = Assertions.assertThrows(
                 ClientNotAuthorisedException.class,
@@ -78,7 +85,7 @@ public class CommentServiceTest {
 
         Assertions.assertEquals(HttpStatus.FORBIDDEN, ex.getStatus());
         verify(clientService, never()).getClient(any(Long.class));
-        verify(eventService, never()).getEvent(any(Long.class));
+        verify(eventService).getEvent(eventId);
         verify(commentRepository, never()).save(any(Comment.class));
     }
 
@@ -86,8 +93,12 @@ public class CommentServiceTest {
     public void test_Add_New_Comment_Not_Found_When_Author_Does_Not_Exist() {
         long clientId = 1L;
         long eventId = 10L;
-        PostNewComment reqBody = new PostNewComment("content", eventId, clientId);
+        PostNewComment reqBody = new PostNewComment("content", eventId);
+        Client eventAuthor = new Client("Test User", "user@test.com", "qwer1234");
+        ReflectionTestUtils.setField(eventAuthor, "id", clientId);
+        Event event = new Event("Test Event", "This is a test event.", eventAuthor);
 
+        when(eventService.getEvent(eventId)).thenReturn(event);
         when(clientService.getClient(clientId)).thenThrow(new AuthorNotFoundException(HttpStatus.NOT_FOUND));
 
         AuthorNotFoundException ex = Assertions.assertThrows(
@@ -96,7 +107,7 @@ public class CommentServiceTest {
         );
 
         Assertions.assertEquals(HttpStatus.NOT_FOUND, ex.getStatus());
-        verify(eventService, never()).getEvent(any(Long.class));
+        verify(eventService).getEvent(eventId);
         verify(commentRepository, never()).save(any(Comment.class));
     }
 
@@ -104,11 +115,7 @@ public class CommentServiceTest {
     public void test_Add_New_Comment_Not_Found_When_Event_Does_Not_Exist() {
         long clientId = 1L;
         long eventId = 10L;
-        PostNewComment reqBody = new PostNewComment("content", eventId, clientId);
-        Client author = new Client("Test User", "user@test.com", "qwer1234");
-        ReflectionTestUtils.setField(author, "id", clientId);
-
-        when(clientService.getClient(clientId)).thenReturn(author);
+        PostNewComment reqBody = new PostNewComment("content", eventId);
         when(eventService.getEvent(eventId)).thenThrow(new EventNotFoundException(HttpStatus.NOT_FOUND, eventId));
 
         EventNotFoundException ex = Assertions.assertThrows(

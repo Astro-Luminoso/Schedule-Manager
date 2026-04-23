@@ -39,7 +39,7 @@ public class RegisterControllerTest {
     public void testRegisterAndSuccess() throws Exception {
         PostRegisterRequest reqBody = new PostRegisterRequest("testUser", "test.tester@dummy.dev", "qwer1234");
         when(registerService.executeRegister(reqBody))
-                .thenReturn(new SimpleClientResponse(reqBody.userName(), reqBody.email()));
+                .thenReturn(new SimpleClientResponse(1L, reqBody.userName(), reqBody.email()));
 
         mockMvc.perform(post("/register")
                         .contentType(MediaType.APPLICATION_JSON)
