@@ -102,7 +102,7 @@ src
 
 ## ERD
 
-- TBA
+<img width="582" height="482" alt="Screenshot 2026-04-23 at 2 26 01 PM" src="https://github.com/user-attachments/assets/11d24433-1cd5-4e83-b2a8-b527b99a82cd" />
 
 ## 실행 방법
 본 API는 실제 배포목적으로 만들어진 것이 아니므로, 로컬 환경에서 실행하는 것을 기준으로 설명한다.
