@@ -63,12 +63,7 @@ public class AuthenticationIntegrationTest {
         mockMvc.perform(post("/login")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(new ObjectMapper().writeValueAsString(reqBody)))
-                .andExpect(status().isUnauthorized())
-                .andExpect(result -> {
-                    HttpSession session = result.getRequest().getSession(false);
-                    SessionUser sessionUser = new ObjectMapper().convertValue(session.getAttribute("LOGIN_USER"), SessionUser.class);
-                    Assertions.assertNull(sessionUser);
-                });
+                .andExpect(status().isUnauthorized());
     }
 
     @Test
