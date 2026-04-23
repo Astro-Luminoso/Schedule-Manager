@@ -184,7 +184,7 @@ public class ClientServiceTest {
     @Test
     public void testRegisterAndSuccess() {
         PostRegisterRequest reqBody = new PostRegisterRequest("testUser", "test.tester@dummy.dev", "qwer1234");
-        Client dummyAuthor = reqBody.toUser();
+        Client dummyAuthor = reqBody.toUser("qwer1234");
         when(clientRepository.existsByEmail(reqBody.email())).thenReturn(false);
         when(clientRepository.save(any(Client.class))).thenReturn(dummyAuthor);
 

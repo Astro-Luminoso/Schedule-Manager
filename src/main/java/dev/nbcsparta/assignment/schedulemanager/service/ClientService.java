@@ -77,7 +77,7 @@ public class ClientService {
         if (clientRepository.existsByEmail(reqBody.email())) {
             throw new DuplicateUserException(HttpStatus.BAD_REQUEST);
         }
-
-        return clientRepository.save(reqBody.toUser());
+        Client client = reqBody.toUser(encoder.encode(reqBody.password()));
+        return clientRepository.save(client);
     }
 }
