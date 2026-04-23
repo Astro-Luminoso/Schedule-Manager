@@ -53,4 +53,15 @@ public class CommentController {
          return ResponseEntity.status(HttpStatus.OK).body(resBody);
     }
 
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteComment(
+            @PathVariable Long id,
+            @SessionAttribute(name = "LOGIN_USER", required = false)SessionUser sessionUser
+    ) {
+        if (sessionUser == null) {
+            throw new ClientNotAuthorisedException(HttpStatus.UNAUTHORIZED);
+        }
+        commentService.deleteCommentById(id, sessionUser.id());
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+    }
 }

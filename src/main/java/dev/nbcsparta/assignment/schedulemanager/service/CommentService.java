@@ -62,4 +62,13 @@ public class CommentService {
         comment.updateContent(reqBody.content());
         return CommentDetail.from(comment);
     }
+
+    public void deleteCommentById(Long commentId, long sessionId) {
+        Comment comment = commentRepository.findById(commentId)
+                .orElseThrow(() -> new CommentNotFoundException(HttpStatus.NOT_FOUND, commentId));
+        if (comment.getAuthor().getId() != sessionId) {
+            throw new ClientNotAuthorisedException(HttpStatus.FORBIDDEN, sessionId, comment.getAuthor().getId());
+        }
+        commentRepository.delete(comment);
+    }
 }
