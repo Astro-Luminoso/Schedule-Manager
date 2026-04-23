@@ -1,6 +1,7 @@
 package dev.nbcsparta.assignment.schedulemanager.service;
 
 import dev.nbcsparta.assignment.schedulemanager.dto.request.PostNewComment;
+import dev.nbcsparta.assignment.schedulemanager.dto.response.AllCommentsByEvent;
 import dev.nbcsparta.assignment.schedulemanager.dto.response.CommentDetail;
 import dev.nbcsparta.assignment.schedulemanager.entity.Client;
 import dev.nbcsparta.assignment.schedulemanager.entity.Comment;
@@ -10,6 +11,8 @@ import dev.nbcsparta.assignment.schedulemanager.repository.CommentRepository;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 @Service
 @Transactional
@@ -40,5 +43,12 @@ public class CommentService {
         Comment comment = reqBody.toEntity(event, author);
         comment = commentRepository.save(comment);
         return CommentDetail.from(comment);
+    }
+
+    @Transactional(readOnly = true)
+    public AllCommentsByEvent getCommentById(Long eventId) {
+        eventService.getEvent(eventId); /* although the method is not used on purpose Will throw exception if eventId is not valid */
+        List<Comment> comments = commentRepository.findByEventId(eventId);
+        return AllCommentsByEvent.from(comments);
     }
 }
