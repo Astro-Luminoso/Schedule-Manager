@@ -1,7 +1,7 @@
 package dev.nbcsparta.assignment.schedulemanager.controller;
 
 import dev.nbcsparta.assignment.schedulemanager.dto.SessionUser;
-import dev.nbcsparta.assignment.schedulemanager.dto.request.PostNewComment;
+import dev.nbcsparta.assignment.schedulemanager.dto.request.NewComment;
 import dev.nbcsparta.assignment.schedulemanager.dto.response.AllCommentsByEvent;
 import dev.nbcsparta.assignment.schedulemanager.dto.response.CommentDetail;
 import dev.nbcsparta.assignment.schedulemanager.exception.ClientNotAuthorisedException;
@@ -24,7 +24,7 @@ public class CommentController {
 
     @PostMapping
     public ResponseEntity<CommentDetail> createNewComment(
-            @Valid @RequestBody PostNewComment reqBody,
+            @Valid @RequestBody NewComment reqBody,
             @SessionAttribute(name = "LOGIN_USER", required = false)SessionUser sessionUser
     ) {
         if (sessionUser == null) {

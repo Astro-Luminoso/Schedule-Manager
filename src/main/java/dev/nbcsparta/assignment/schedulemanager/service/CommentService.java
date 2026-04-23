@@ -1,6 +1,6 @@
 package dev.nbcsparta.assignment.schedulemanager.service;
 
-import dev.nbcsparta.assignment.schedulemanager.dto.request.PostNewComment;
+import dev.nbcsparta.assignment.schedulemanager.dto.request.NewComment;
 import dev.nbcsparta.assignment.schedulemanager.dto.response.AllCommentsByEvent;
 import dev.nbcsparta.assignment.schedulemanager.dto.response.CommentDetail;
 import dev.nbcsparta.assignment.schedulemanager.entity.Client;
@@ -32,7 +32,7 @@ public class CommentService {
         this.eventService = eventService;
     }
 
-    public CommentDetail createComment(PostNewComment reqBody, long sessionId) {
+    public CommentDetail createComment(NewComment reqBody, long sessionId) {
         Event event = eventService.getEvent(reqBody.eventId());
         if(event.getAuthor().getId() != sessionId) {
             throw new ClientNotAuthorisedException(HttpStatus.FORBIDDEN, sessionId, event.getAuthor().getId());

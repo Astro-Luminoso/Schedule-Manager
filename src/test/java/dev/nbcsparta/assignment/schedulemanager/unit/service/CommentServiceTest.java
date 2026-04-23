@@ -1,6 +1,6 @@
 package dev.nbcsparta.assignment.schedulemanager.unit.service;
 
-import dev.nbcsparta.assignment.schedulemanager.dto.request.PostNewComment;
+import dev.nbcsparta.assignment.schedulemanager.dto.request.NewComment;
 import dev.nbcsparta.assignment.schedulemanager.dto.response.CommentDetail;
 import dev.nbcsparta.assignment.schedulemanager.dto.response.SimpleClientResponse;
 import dev.nbcsparta.assignment.schedulemanager.entity.Client;
@@ -46,7 +46,7 @@ public class CommentServiceTest {
     public void test_Add_New_Comment_Success() {
         long clientId = 1L;
         long eventId = 1L;
-        PostNewComment reqBody = new PostNewComment("This is an awesome comments!!", eventId);
+        NewComment reqBody = new NewComment("This is an awesome comments!!", eventId);
         Client author = new Client("Test User", "user@test.com", "qwer1234");
         ReflectionTestUtils.setField(author, "id", clientId);
         Event event = new Event("Test Event", "This is a test event.", author);
@@ -71,7 +71,7 @@ public class CommentServiceTest {
     public void test_Add_New_Comment_Forbidden_When_Session_User_Does_Not_Match_Author() {
         long sessionId = 1L;
         long eventId = 99L;
-        PostNewComment reqBody = new PostNewComment("content", eventId);
+        NewComment reqBody = new NewComment("content", eventId);
         Client eventAuthor = new Client("Another User", "other@test.com", "qwer1234");
         ReflectionTestUtils.setField(eventAuthor, "id", 2L);
         Event event = new Event("Test Event", "This is a test event.", eventAuthor);
@@ -93,7 +93,7 @@ public class CommentServiceTest {
     public void test_Add_New_Comment_Not_Found_When_Author_Does_Not_Exist() {
         long clientId = 1L;
         long eventId = 10L;
-        PostNewComment reqBody = new PostNewComment("content", eventId);
+        NewComment reqBody = new NewComment("content", eventId);
         Client eventAuthor = new Client("Test User", "user@test.com", "qwer1234");
         ReflectionTestUtils.setField(eventAuthor, "id", clientId);
         Event event = new Event("Test Event", "This is a test event.", eventAuthor);
@@ -115,7 +115,7 @@ public class CommentServiceTest {
     public void test_Add_New_Comment_Not_Found_When_Event_Does_Not_Exist() {
         long clientId = 1L;
         long eventId = 10L;
-        PostNewComment reqBody = new PostNewComment("content", eventId);
+        NewComment reqBody = new NewComment("content", eventId);
         when(eventService.getEvent(eventId)).thenThrow(new EventNotFoundException(HttpStatus.NOT_FOUND, eventId));
 
         EventNotFoundException ex = Assertions.assertThrows(

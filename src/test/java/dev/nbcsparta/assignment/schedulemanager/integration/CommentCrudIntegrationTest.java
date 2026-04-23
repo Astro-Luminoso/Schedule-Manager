@@ -3,7 +3,7 @@ package dev.nbcsparta.assignment.schedulemanager.integration;
 import dev.nbcsparta.assignment.schedulemanager.config.PasswordEncoder;
 import dev.nbcsparta.assignment.schedulemanager.dto.SessionUser;
 import dev.nbcsparta.assignment.schedulemanager.dto.request.PostLoginRequest;
-import dev.nbcsparta.assignment.schedulemanager.dto.request.PostNewComment;
+import dev.nbcsparta.assignment.schedulemanager.dto.request.NewComment;
 import dev.nbcsparta.assignment.schedulemanager.dto.response.AllCommentsByEvent;
 import dev.nbcsparta.assignment.schedulemanager.dto.response.CommentDetail;
 import dev.nbcsparta.assignment.schedulemanager.entity.Client;
@@ -75,7 +75,7 @@ public class CommentCrudIntegrationTest {
     public void createComment_And_Success() throws Exception {
         Event event = eventRepository.save(new Event("Team Meeting", "Discuss sprint", loginUser));
         MockHttpSession session = loginAndGetSession(loginUser.getEmail(), "q1w2e3r4");
-        PostNewComment reqBody = new PostNewComment("Looks good!", event.getId());
+        NewComment reqBody = new NewComment("Looks good!", event.getId());
 
         MvcResult result = mockMvc.perform(post("/comments")
                         .session(session)
@@ -104,7 +104,7 @@ public class CommentCrudIntegrationTest {
     @Test
     public void createComment_And_Unauthorized_Without_Session() throws Exception {
         Event event = eventRepository.save(new Event("Team Meeting", "Discuss sprint", loginUser));
-        PostNewComment reqBody = new PostNewComment("Looks good!", event.getId());
+        NewComment reqBody = new NewComment("Looks good!", event.getId());
 
         mockMvc.perform(post("/comments")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -117,7 +117,7 @@ public class CommentCrudIntegrationTest {
     @Test
     public void createComment_And_NotFound_When_Event_Does_Not_Exist() throws Exception {
         MockHttpSession session = loginAndGetSession(loginUser.getEmail(), "q1w2e3r4");
-        PostNewComment reqBody = new PostNewComment("Looks good!", 999999L);
+        NewComment reqBody = new NewComment("Looks good!", 999999L);
 
         mockMvc.perform(post("/comments")
                         .session(session)
@@ -132,7 +132,7 @@ public class CommentCrudIntegrationTest {
     public void createComment_And_Forbidden_When_Session_User_Is_Not_Event_Author() throws Exception {
         Event event = eventRepository.save(new Event("Team Meeting", "Discuss sprint", loginUser));
         MockHttpSession session = loginAndGetSession(anotherUser.getEmail(), "a1s2d3f4");
-        PostNewComment reqBody = new PostNewComment("Looks good!", event.getId());
+        NewComment reqBody = new NewComment("Looks good!", event.getId());
 
         mockMvc.perform(post("/comments")
                         .session(session)
@@ -154,13 +154,13 @@ public class CommentCrudIntegrationTest {
         mockMvc.perform(post("/comments")
                         .session(loginSession)
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(new PostNewComment("First comment", loginUserEvent.getId()))))
+                        .content(objectMapper.writeValueAsString(new NewComment("First comment", loginUserEvent.getId()))))
                 .andExpect(status().isCreated());
 
         mockMvc.perform(post("/comments")
                         .session(anotherSession)
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(new PostNewComment("Second comment", anotherUserEvent.getId()))))
+                        .content(objectMapper.writeValueAsString(new NewComment("Second comment", anotherUserEvent.getId()))))
                 .andExpect(status().isCreated());
 
         MvcResult result = mockMvc.perform(get("/comments").param("eventId", String.valueOf(loginUserEvent.getId())))
