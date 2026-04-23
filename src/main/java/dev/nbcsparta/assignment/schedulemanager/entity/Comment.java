@@ -51,4 +51,8 @@ public class Comment {
     public Client getAuthor() {
         return this.author;
     }
+
+    public void updateContent(String content) {
+        this.content = content;
+    }
 }

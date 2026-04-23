@@ -7,6 +7,7 @@ import dev.nbcsparta.assignment.schedulemanager.entity.Client;
 import dev.nbcsparta.assignment.schedulemanager.entity.Comment;
 import dev.nbcsparta.assignment.schedulemanager.entity.Event;
 import dev.nbcsparta.assignment.schedulemanager.exception.ClientNotAuthorisedException;
+import dev.nbcsparta.assignment.schedulemanager.exception.CommentNotFoundException;
 import dev.nbcsparta.assignment.schedulemanager.repository.CommentRepository;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -50,5 +51,15 @@ public class CommentService {
         eventService.getEvent(eventId); /* although the method is not used on purpose Will throw exception if eventId is not valid */
         List<Comment> comments = commentRepository.findByEventId(eventId);
         return AllCommentsByEvent.from(comments);
+    }
+
+    public CommentDetail patchCommentById(Long commentId, NewComment reqBody, long sessionId) {
+        Comment comment = commentRepository.findById(commentId)
+                .orElseThrow(() -> new CommentNotFoundException(HttpStatus.NOT_FOUND, commentId));
+        if(comment.getAuthor().getId() != sessionId) {
+            throw new ClientNotAuthorisedException(HttpStatus.FORBIDDEN, sessionId, comment.getAuthor().getId());
+        }
+        comment.updateContent(reqBody.content());
+        return CommentDetail.from(comment);
     }
 }

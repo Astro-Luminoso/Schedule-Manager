@@ -39,4 +39,18 @@ public class CommentController {
         AllCommentsByEvent resBody = commentService.getCommentById(eventId);
         return ResponseEntity.status(HttpStatus.OK).body(resBody);
     }
+
+    @PatchMapping("/{id}")
+    public ResponseEntity<CommentDetail> updateComment(
+            @PathVariable Long id,
+            @Valid NewComment reqBody,
+            @SessionAttribute(name = "LOGIN_USER", required = false)SessionUser sessionUser
+    ) {
+        if (sessionUser == null) {
+            throw new ClientNotAuthorisedException(HttpStatus.UNAUTHORIZED);
+        }
+         CommentDetail resBody = commentService.patchCommentById(id, reqBody, sessionUser.id());
+         return ResponseEntity.status(HttpStatus.OK).body(resBody);
+    }
+
 }
