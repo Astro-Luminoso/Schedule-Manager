@@ -1,4 +1,4 @@
-package dev.nbcsparta.assignment.schedulemanager;
+package dev.nbcsparta.assignment.schedulemanager.unit.controller;
 
 import dev.nbcsparta.assignment.schedulemanager.config.PasswordEncoder;
 import dev.nbcsparta.assignment.schedulemanager.controller.RegisterController;
@@ -14,7 +14,6 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import tools.jackson.databind.ObjectMapper;
 
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -40,7 +39,7 @@ public class RegisterControllerTest {
     public void testRegisterAndSuccess() throws Exception {
         PostRegisterRequest reqBody = new PostRegisterRequest("testUser", "test.tester@dummy.dev", "qwer1234");
         when(registerService.executeRegister(reqBody))
-                .thenReturn(new SimpleClientResponse(reqBody.userName(), reqBody.email()));
+                .thenReturn(new SimpleClientResponse(1L, reqBody.userName(), reqBody.email()));
 
         mockMvc.perform(post("/register")
                         .contentType(MediaType.APPLICATION_JSON)

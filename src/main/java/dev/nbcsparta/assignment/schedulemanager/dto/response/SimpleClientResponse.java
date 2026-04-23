@@ -1,8 +1,10 @@
 package dev.nbcsparta.assignment.schedulemanager.dto.response;
 
-public record SimpleClientResponse(String userName, String email) {
+import dev.nbcsparta.assignment.schedulemanager.entity.Client;
 
-    public static SimpleClientResponse from(String userName, String email) {
-        return new SimpleClientResponse(userName, email);
+public record SimpleClientResponse(Long id, String userName, String email) {
+
+    public static SimpleClientResponse from(Client client) {
+        return new SimpleClientResponse(client.getId(), client.getUserName(), client.getEmail());
     }
 }
