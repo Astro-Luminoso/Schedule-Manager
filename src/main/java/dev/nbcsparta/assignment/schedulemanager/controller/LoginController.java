@@ -3,7 +3,9 @@ package dev.nbcsparta.assignment.schedulemanager.controller;
 import dev.nbcsparta.assignment.schedulemanager.dto.SessionUser;
 import dev.nbcsparta.assignment.schedulemanager.dto.request.PostLoginRequest;
 import dev.nbcsparta.assignment.schedulemanager.service.LoginService;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
@@ -24,19 +26,27 @@ public class LoginController {
     @PostMapping("/login")
     public ResponseEntity<Void> attemptLogin(
             @Valid @RequestBody PostLoginRequest request,
-            HttpSession session
+            HttpServletRequest httpRequest
     ) {
         SessionUser sessionUser = loginService.executeLogin(request);
 
+        HttpSession session = httpRequest.getSession(true);
         session.setAttribute("LOGIN_USER", sessionUser);
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 
     @PostMapping("/logout")
-    public ResponseEntity<Void> attemptLogout(HttpServletRequest request) {
+    public ResponseEntity<Void> attemptLogout(
+            HttpServletRequest request,
+            HttpServletResponse response) {
         HttpSession session = request.getSession(false);
         if (session != null) {
             session.invalidate();
+            Cookie cookie = new Cookie("JSESSIONID", null);
+            cookie.setPath("/");
+            cookie.setMaxAge(0);
+            response.addCookie(cookie);
+
         }
 
         return ResponseEntity.status(HttpStatus.OK).build();

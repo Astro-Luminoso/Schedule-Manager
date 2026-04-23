@@ -3,10 +3,11 @@ package dev.nbcsparta.assignment.schedulemanager.entity;
 import jakarta.persistence.*;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
-import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @EntityListeners(AuditingEntityListener.class)
@@ -30,6 +31,9 @@ public class Event {
     @JoinColumn(name = "author_id", nullable = false)
     private Client author;
 
+    @OneToMany(mappedBy= "event", cascade = CascadeType.REMOVE, orphanRemoval=true)
+    private List<Comment> comments;
+
     // JPA Empty constructor
     protected Event() {
     }
@@ -38,6 +42,7 @@ public class Event {
         this.title = title;
         this.description = description;
         this.author = client;
+        this.comments = new ArrayList<>();
     }
 
     public Long getId() {
