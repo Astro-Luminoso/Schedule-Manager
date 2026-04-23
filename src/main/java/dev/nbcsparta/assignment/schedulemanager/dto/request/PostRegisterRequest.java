@@ -17,7 +17,7 @@ public record PostRegisterRequest(
         @Size(min = 8)
         String password
 ) {
-    public Client toUser() {
-        return new Client(userName, email, password);
+    public Client toUser(String encodedPassword) {
+        return new Client(userName, email, encodedPassword);
     }
 }

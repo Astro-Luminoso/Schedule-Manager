@@ -29,7 +29,7 @@ public class RegisterServiceTest {
     @Test
     public void testRegisterAndSuccess() {
         PostRegisterRequest reqBody = new PostRegisterRequest("testUser", "test.tester@dummy.dev", "qwer1234");
-        Client dummyAuthor = reqBody.toUser();
+        Client dummyAuthor = reqBody.toUser("qwer1234");
         when(clientService.saveNewClient(reqBody)).thenReturn(dummyAuthor);
 
         SimpleClientResponse dummyResBody = registerService.executeRegister(reqBody);
