@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 public class GlobalExceptionHandler {
 
     @ExceptionHandler(CustomException.class)
-    public ResponseEntity<Void> handlePasswordNotMatchException(PasswordNotMatchException ex) {
+    public ResponseEntity<Void> handlePasswordNotMatchException(CustomException ex) {
         return ResponseEntity.status(ex.getStatus()).build();
     }
 }
