@@ -2,16 +2,10 @@ package dev.nbcsparta.assignment.schedulemanager.exception;
 
 import org.springframework.http.HttpStatus;
 
-public class PasswordNotMatchException extends RuntimeException {
+public class PasswordNotMatchException extends CustomException {
 
-    private HttpStatus status;
 
     public PasswordNotMatchException(HttpStatus status) {
-        super("Invalid Password");
-        this.status = status;
-    }
-
-    public HttpStatus getStatus(){
-        return this.status;
+        super("Invalid Password", status);
     }
 }
