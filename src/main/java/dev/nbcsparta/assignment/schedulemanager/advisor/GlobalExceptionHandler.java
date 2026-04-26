@@ -1,9 +1,6 @@
 package dev.nbcsparta.assignment.schedulemanager.advisor;
 
-import dev.nbcsparta.assignment.schedulemanager.exception.AuthorNotFoundException;
-import dev.nbcsparta.assignment.schedulemanager.exception.ClientNotAuthorisedException;
-import dev.nbcsparta.assignment.schedulemanager.exception.EventNotFoundException;
-import dev.nbcsparta.assignment.schedulemanager.exception.PasswordNotMatchException;
+import dev.nbcsparta.assignment.schedulemanager.exception.*;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -28,6 +25,16 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(AuthorNotFoundException.class)
     public ResponseEntity<Void> handleAuthorNotFoundException(AuthorNotFoundException ex) {
+        return ResponseEntity.status(ex.getStatus()).build();
+    }
+
+    @ExceptionHandler(DuplicateUserException.class)
+    public ResponseEntity<Void> handleDuplicateUserException(DuplicateUserException ex) {
+        return ResponseEntity.status(ex.getStatus()).build();
+    }
+
+    @ExceptionHandler(CommentNotFoundException.class)
+    public ResponseEntity<Void> handleDuplicateUserException(CommentNotFoundException ex) {
         return ResponseEntity.status(ex.getStatus()).build();
     }
 }
